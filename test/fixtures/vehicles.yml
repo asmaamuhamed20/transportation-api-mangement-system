@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  model: MyString
+  registration_number: MyString
+  driver: one
+  available_time: MyString
+
+two:
+  model: MyString
+  registration_number: MyString
+  driver: two
+  available_time: MyString

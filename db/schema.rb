@@ -10,5 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 0) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_15_204512) do
+  create_table "drivers", force: :cascade do |t|
+    t.string "driver_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "vehicles", force: :cascade do |t|
+    t.string "model"
+    t.string "registration_number"
+    t.integer "driver_id", null: false
+    t.string "available_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["driver_id"], name: "index_vehicles_on_driver_id"
+  end
+
+  add_foreign_key "vehicles", "drivers"
 end
