@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 ruby "3.2.2"
 
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.2"
 
@@ -13,7 +14,7 @@ gem "puma", ">= 5.0"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
-
+gem 'devise'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
