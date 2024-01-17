@@ -133,6 +133,8 @@ GEM
     nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    petergate (1.9.1)
+      activerecord (> 4.0.0)
     psych (5.1.2)
       stringio
     puma (6.4.2)
@@ -209,6 +211,7 @@ DEPENDENCIES
   bootsnap
   debug
   devise (~> 4.9, >= 4.9.2)
+  petergate (~> 1.6, >= 1.6.3)
   puma (>= 5.0)
   rails (~> 7.1.2)
   sqlite3 (~> 1.4)
