@@ -1,4 +1,5 @@
 class DriversController < ApplicationController
+    access all: [:show, :index], user: {except: [:destroy, :new, :create, :update, :edit]}, admin: :all
     def index
         render json: Driver.all
     end

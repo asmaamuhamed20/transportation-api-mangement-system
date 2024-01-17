@@ -2,6 +2,7 @@ module Api
     module V1
       class VehiclesController < ApplicationController
         before_action :set_vehicle, only: [:show, :edit, :update, :destroy]
+        access all: [:show, :index], user: {except: [:destroy, :new, :create, :update, :edit]}, admin: :all
   
         def index
           render json: Vehicle.all
