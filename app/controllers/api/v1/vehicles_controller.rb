@@ -1,5 +1,5 @@
 module Api
-    module Vehicle1
+    module V1
       class VehiclesController < ApplicationController
         before_action :set_vehicle, only: [:show, :edit, :update, :destroy]
   
