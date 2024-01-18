@@ -8,6 +8,7 @@ Rails.application.routes.draw do
             post "sign_in", to: "sessions#create"
           end
       resources :vehicles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+      resources :rides, only: [:index, :show, :new, :create, :edit, :update, :destroy]
       resources :users, only: [:create, :show, :update, :destroy]
       resources :users, only: [:destroy]
     end
