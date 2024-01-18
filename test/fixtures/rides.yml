@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  driver: one
+  vehicle: one
+  pickup_stop: MyString
+  drop_off_stop: MyString
+  start_time: 2024-01-18 15:45:18
+  end_time: 2024-01-18 15:45:18
+
+two:
+  user: two
+  driver: two
+  vehicle: two
+  pickup_stop: MyString
+  drop_off_stop: MyString
+  start_time: 2024-01-18 15:45:18
+  end_time: 2024-01-18 15:45:18

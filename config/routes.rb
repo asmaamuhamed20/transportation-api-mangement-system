@@ -7,8 +7,11 @@ Rails.application.routes.draw do
             post "sign_up", to: "registrations#create"
             post "sign_in", to: "sessions#create"
           end
-      end
-    end 
+      resources :vehicles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+      resources :users, only: [:create, :show, :update, :destroy]
+      resources :users, only: [:destroy]
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

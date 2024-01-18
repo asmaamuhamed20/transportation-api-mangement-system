@@ -10,11 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_17_200309) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_18_124517) do
   create_table "drivers", force: :cascade do |t|
     t.string "driver_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "rides", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "driver_id", null: false
+    t.integer "vehicle_id", null: false
+    t.string "pickup_stop"
+    t.string "drop_off_stop"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["driver_id"], name: "index_rides_on_driver_id"
+    t.index ["user_id"], name: "index_rides_on_user_id"
+    t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -41,5 +56,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_17_200309) do
     t.index ["driver_id"], name: "index_vehicles_on_driver_id"
   end
 
+  add_foreign_key "rides", "drivers"
+  add_foreign_key "rides", "users"
+  add_foreign_key "rides", "vehicles"
   add_foreign_key "vehicles", "drivers"
 end
