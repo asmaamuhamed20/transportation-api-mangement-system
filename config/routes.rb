@@ -9,6 +9,11 @@ Rails.application.routes.draw do
           end
       resources :vehicles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
       resources :rides, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+      resources :rides do
+        member do
+          patch 'swap_vehicle'
+        end
+      end
       resources :users, only: [:create, :show, :update, :destroy]
       resources :users, only: [:destroy]
     end
