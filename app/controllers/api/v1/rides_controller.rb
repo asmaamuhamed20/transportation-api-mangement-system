@@ -50,7 +50,7 @@ class Api::V1::RidesController < ApplicationController
         new_user = find_user(params[:new_user_id])
     
         if @ride.replace_user(new_user)
-          render_ok('User replaced in the ride successfully', ride: @ride)
+          render_json_success('User replaced in the ride successfully', ride: @ride)
         else
           render_error(:unprocessable_entity, 'Failed to replace user in the ride')
         end
@@ -80,7 +80,7 @@ class Api::V1::RidesController < ApplicationController
     def complete_ride
         @ride = Ride.find(params[:id])
         @ride.update(status: :completed)
-        render_ok('Ride completed successfully', ride: @ride)
+        render_json_success('Ride completed successfully', ride: @ride)
     end
       
                 
@@ -134,7 +134,7 @@ class Api::V1::RidesController < ApplicationController
     end
       
     
-    def render_ok(message, data = {})
+    def render_json_success(message, data = {})
         render json: { success: true, message: message, data: data }, status: :ok
     end
 
@@ -156,7 +156,7 @@ class Api::V1::RidesController < ApplicationController
 
     def process_remove_user(ride, user)
         if ride.remove_user(user)
-          render_ok('User removed from the ride successfully')
+          render_json_success('User removed from the ride successfully')
         else
           render_error(:unprocessable_entity, { error: 'Failed to remove user from the ride', errors: ride.errors.full_messages })
         end

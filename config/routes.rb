@@ -29,9 +29,10 @@ Rails.application.routes.draw do
           post 'complete_ride'
         end
       end
-      resources :system_statistics, only: [:total_rides_count] do
+      resources :system_statistics do
         collection do
           get :total_rides_count
+          get :daily_rides_count
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]
