@@ -1,4 +1,5 @@
 class Ride < ApplicationRecord
+  attribute :status, :integer, default: 0
   belongs_to :user
   belongs_to :driver
   belongs_to :vehicle
@@ -8,6 +9,7 @@ class Ride < ApplicationRecord
 
   validates :start_time, presence: true
   validates :end_time, presence: true
+  enum status: { active: 0, completed: 1 }
 
   def add_user(user)
     users << user unless users.include?(user)

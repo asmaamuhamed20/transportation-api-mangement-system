@@ -6,6 +6,7 @@ class Api::V1::RidesController < ApplicationController
 
     def create
         ride = Ride.new(ride_params)
+        ride.status = :active
         if vehicle_available?(ride)
             if ride.save
             render json: ride, status: :created
@@ -75,7 +76,12 @@ class Api::V1::RidesController < ApplicationController
         rides = Ride.where('start_time >= ? AND end_time <= ?', params[:start_time], params[:end_time])
         render json: rides, status: :ok
     end
-      
+
+    def complete_ride
+        @ride = Ride.find(params[:id])
+        @ride.update(status: :completed)
+        render_ok('Ride completed successfully', ride: @ride)
+    end
       
                 
     private

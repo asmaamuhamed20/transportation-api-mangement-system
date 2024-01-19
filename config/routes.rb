@@ -19,6 +19,7 @@ Rails.application.routes.draw do
           get 'rides_for_user'
           get 'rides_for_date'
           get 'rides_for_time_range'
+          post 'complete_ride'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]
