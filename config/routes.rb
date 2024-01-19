@@ -15,6 +15,8 @@ Rails.application.routes.draw do
           post 'add_user', to: 'rides#add_user_to_ride'
           delete 'remove_user', to: 'rides#remove_user'
           post 'replace_user'
+          get 'rides_for_driver'
+          get 'rides_for_user'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]

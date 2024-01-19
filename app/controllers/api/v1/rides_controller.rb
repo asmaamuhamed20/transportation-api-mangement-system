@@ -1,6 +1,8 @@
 class Api::V1::RidesController < ApplicationController
     before_action :validate_vehicle_availability, only: [:create]
     before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
+    before_action :find_driver, only: [:rides_for_driver]
+    before_action :find_user, only: [:rides_for_user]
 
     def create
         ride = Ride.new(ride_params)
@@ -52,6 +54,17 @@ class Api::V1::RidesController < ApplicationController
           render_error(:unprocessable_entity, 'Failed to replace user in the ride')
         end
     end
+
+    def rides_for_driver
+        rides = Ride.where(driver: @driver)
+        render json: rides, status: :ok
+    end
+
+    def rides_for_user
+        user = User.find(params[:user_id])
+        rides = user.rides
+        render json: rides, status: :ok
+    end
       
       
                 
@@ -90,6 +103,14 @@ class Api::V1::RidesController < ApplicationController
       
         vehicle
     end
+
+    def find_driver
+        @driver = Driver.find_by(id: params[:driver_id])
+    
+        unless @driver
+          render_error(:not_found, 'Driver not found')
+        end
+    end
       
       
     def render_error(status, messages)
@@ -101,9 +122,13 @@ class Api::V1::RidesController < ApplicationController
         render json: { success: true, message: message, data: data }, status: :ok
     end
 
-    def find_user(user_id)
-        User.find(user_id)
-    end
+    def find_user
+        @user = User.find_by(id: params[:user_id])
+    
+        unless @user
+          render_error(:not_found, 'User not found')
+        end
+      end
 
     def process_add_user(ride, user)
         if ride.add_user(user)
