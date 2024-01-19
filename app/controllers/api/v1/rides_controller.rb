@@ -29,9 +29,21 @@ class Api::V1::RidesController < ApplicationController
             head :not_found
         end
     end
+
+    def add_user_to_ride
+        ride = find_ride
+        user = find_user(params[:user_id])
+        process_add_user(ride, user)
+    end
       
+    def remove_user_from_ride
+        ride = find_ride
+        user = User.find(params[:user_id])
+        process_user_action(ride, user, 'removed')
+    end
       
-      
+
+          
     private
     
     
@@ -76,4 +88,19 @@ class Api::V1::RidesController < ApplicationController
     def render_ok(message)
         render json: { error: message }, status: :ok
     end
+
+    def find_user(user_id)
+        User.find(user_id)
+    end
+
+    def process_add_user(ride, user)
+        if ride.add_user(user)
+          render json: { message: 'User added to the ride successfully', ride: ride }, status: :ok
+        else
+          render_error(:unprocessable_entity, 'Failed to add user to the ride')
+        end
+    end
+      
+
+      
 end

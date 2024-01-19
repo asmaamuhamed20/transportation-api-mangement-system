@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       resources :rides do
         member do
           patch 'swap_vehicle'
+          post 'add_user', to: 'rides#add_user_to_ride'
+          delete 'remove_user', to: 'rides#remove_user_from_ride'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]

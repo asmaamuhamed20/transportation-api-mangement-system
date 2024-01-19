@@ -8,4 +8,8 @@ class Ride < ApplicationRecord
 
   validates :start_time, presence: true
   validates :end_time, presence: true
+
+  def add_user(user)
+    self.user = user
+  end  
 end
