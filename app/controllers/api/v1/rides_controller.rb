@@ -65,6 +65,16 @@ class Api::V1::RidesController < ApplicationController
         rides = user.rides
         render json: rides, status: :ok
     end
+
+    def rides_for_date
+        rides = Ride.where('DATE(start_time) = ?', params[:date])
+        render json: rides, status: :ok
+    end
+
+    def rides_for_time_range
+        rides = Ride.where('start_time >= ? AND end_time <= ?', params[:start_time], params[:end_time])
+        render json: rides, status: :ok
+    end
       
       
                 

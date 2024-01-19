@@ -17,6 +17,8 @@ Rails.application.routes.draw do
           post 'replace_user'
           get 'rides_for_driver'
           get 'rides_for_user'
+          get 'rides_for_date'
+          get 'rides_for_time_range'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]
