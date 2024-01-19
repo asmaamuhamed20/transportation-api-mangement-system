@@ -14,8 +14,11 @@ class Api::V1::SystemStatisticsController < ApplicationController
     end
     render_json_success(daily_rides_count: daily_counts)
   end
-  
-  
+
+  def total_drivers_count
+    total_drivers = Driver.count
+    render_json_success(total_drivers: total_drivers) 
+  end
 
   private
 
