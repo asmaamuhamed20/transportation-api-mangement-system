@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      get 'system_statistics/total_rides_count'
+      get 'system_statistics/daily_rides_count'
+      get 'system_statistics/total_drivers_count'
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   devise_for :users
     namespace :api, defaults: {format: :json} do
@@ -20,6 +27,11 @@ Rails.application.routes.draw do
           get 'rides_for_date'
           get 'rides_for_time_range'
           post 'complete_ride'
+        end
+      end
+      resources :system_statistics, only: [:total_rides_count] do
+        collection do
+          get :total_rides_count
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]
