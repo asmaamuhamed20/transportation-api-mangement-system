@@ -29,6 +29,11 @@ Rails.application.routes.draw do
           get :total_drivers_count
         end
       end
+      resources :drivers do
+        member do
+          get 'average_rating'
+        end
+      end
       resources :users, only: [:create, :show, :update, :destroy]
       resources :users, only: [:destroy]
     end

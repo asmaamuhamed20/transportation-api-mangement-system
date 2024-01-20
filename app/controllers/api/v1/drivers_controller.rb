@@ -1,5 +1,5 @@
 class Api::V1::DriversController < ApplicationController
-    access all: [:show, :index], user: {except: [:destroy, :new, :create, :update, :edit]}, admin: :all
+
     def index
         render json: Driver.all
     end
@@ -33,4 +33,7 @@ class Api::V1::DriversController < ApplicationController
         @average_rating = @driver.ratings.average(:rating_value)
         render json: { average_rating: @average_rating }
     end
+
+    private
+
 end
