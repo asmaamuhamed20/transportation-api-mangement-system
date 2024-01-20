@@ -79,6 +79,8 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+  config.session_store :cookie_store, key: '_transpotration_project_session'
+
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

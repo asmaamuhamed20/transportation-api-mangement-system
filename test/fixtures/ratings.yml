@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ride: one
+  user: one
+  driver: one
+  rating_value: 1
+  comment: MyText
+
+two:
+  ride: two
+  user: two
+  driver: two
+  rating_value: 1
+  comment: MyText
