@@ -1,5 +1,6 @@
 class RatingsController < ApplicationController
     before_action :set_rating, only: [:show, :update, :destroy]
+    before_action :set_resources, only: [:create]
     
     def create
         @rating = Rating.new(rating_params)
@@ -20,10 +21,24 @@ class RatingsController < ApplicationController
         render json: @ratings
     end
 
+    def update
+        
+    end
+
+    def destroy
+        
+    end
+
     private
 
     def set_rating
         @rating = Rating.find(params[:id])
+    end
+
+    def set_resources
+        @ride = Ride.find(params[:ride_id])
+        @user = User.find(params[:user_id])
+        @driver = Driver.find(params[:driver_id])
     end
 
     def rating_params
