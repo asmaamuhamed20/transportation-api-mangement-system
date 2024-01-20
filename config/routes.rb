@@ -1,11 +1,4 @@
 Rails.application.routes.draw do
-  namespace :api do
-    namespace :v1 do
-      get 'system_statistics/total_rides_count'
-      get 'system_statistics/daily_rides_count'
-      get 'system_statistics/total_drivers_count'
-    end
-  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   devise_for :users
     namespace :api, defaults: {format: :json} do
