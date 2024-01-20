@@ -61,6 +61,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_20_103612) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
+    t.integer "rating"
     t.index ["driver_id"], name: "index_rides_on_driver_id"
     t.index ["user_id"], name: "index_rides_on_user_id"
     t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
