@@ -38,6 +38,13 @@ Rails.application.routes.draw do
           get :total_drivers_count
         end
       end
+      resources :system_statistics do
+        collection do
+          get :total_rides_count
+          get :daily_rides_count
+          get :total_drivers_count
+        end
+      end
       resources :users, only: [:create, :show, :update, :destroy]
       resources :users, only: [:destroy]
     end
