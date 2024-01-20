@@ -149,7 +149,7 @@ class Api::V1::RidesController < ApplicationController
         unless @user
           render_error(:not_found, 'User not found')
         end
-      end
+    end
 
     def process_add_user(ride, user)
         if ride.add_user(user)

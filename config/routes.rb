@@ -28,8 +28,17 @@ Rails.application.routes.draw do
           get 'rides_for_time_range'
           post 'complete_ride'
         end
+        resources :ride_reviews, only: [:create, :show]
+        resources :ratings, only: [:create, :show, :index]
       end
       resources :system_statistics do 
+        collection do
+          get :total_rides_count
+          get :daily_rides_count
+          get :total_drivers_count
+        end
+      end
+      resources :system_statistics do
         collection do
           get :total_rides_count
           get :daily_rides_count
