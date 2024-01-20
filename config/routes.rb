@@ -29,6 +29,7 @@ Rails.application.routes.draw do
           post 'complete_ride'
         end
         resources :ride_reviews, only: [:create, :show]
+        resources :ratings, only: [:create, :show, :index]
       end
       resources :system_statistics do 
         collection do

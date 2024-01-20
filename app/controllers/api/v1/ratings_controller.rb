@@ -1,10 +1,10 @@
-class RatingsController < ApplicationController
-    before_action :set_rating, only: [:show, :update, :destroy]
-    before_action :set_resources, only: [:create]
+class Api::V1::RatingsController < ApplicationController
+    before_action :set_ride
     
     def create
-        @rating = Rating.new(rating_params)
-
+        # driver reviews a user
+        @rating = @ride.ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
+        
         if @rating.save
         render json: @rating, status: :created
         else
@@ -31,14 +31,9 @@ class RatingsController < ApplicationController
 
     private
 
-    def set_rating
-        @rating = Rating.find(params[:id])
-    end
 
-    def set_resources
+    def set_ride
         @ride = Ride.find(params[:ride_id])
-        @user = User.find(params[:user_id])
-        @driver = Driver.find(params[:driver_id])
     end
 
     def rating_params
