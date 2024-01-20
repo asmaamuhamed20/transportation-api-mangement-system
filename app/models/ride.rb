@@ -6,6 +6,7 @@ class Ride < ApplicationRecord
 
   has_many :ride_users
   has_many :users, through: :ride_users, source: :user
+  has_many :ratings
 
   validates :start_time, presence: true
   validates :end_time, presence: true
