@@ -28,6 +28,7 @@ Rails.application.routes.draw do
           get 'rides_for_time_range'
           post 'complete_ride'
         end
+        resources :ride_reviews, only: [:create, :show]
       end
       resources :system_statistics do 
         collection do
