@@ -10,11 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_19_215029) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_20_103612) do
   create_table "drivers", force: :cascade do |t|
     t.string "driver_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "ratings", force: :cascade do |t|
+    t.integer "ride_id", null: false
+    t.integer "user_id", null: false
+    t.integer "driver_id", null: false
+    t.integer "rating_value"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["driver_id"], name: "index_ratings_on_driver_id"
+    t.index ["ride_id"], name: "index_ratings_on_ride_id"
+    t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
+  create_table "ride_reviews", force: :cascade do |t|
+    t.integer "ride_id", null: false
+    t.integer "user_id", null: false
+    t.integer "rating"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ride_id"], name: "index_ride_reviews_on_ride_id"
+    t.index ["user_id"], name: "index_ride_reviews_on_user_id"
   end
 
   create_table "ride_users", force: :cascade do |t|
@@ -37,6 +61,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_215029) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
+    t.integer "rating"
     t.index ["driver_id"], name: "index_rides_on_driver_id"
     t.index ["user_id"], name: "index_rides_on_user_id"
     t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
@@ -66,6 +91,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_215029) do
     t.index ["driver_id"], name: "index_vehicles_on_driver_id"
   end
 
+  add_foreign_key "ratings", "drivers"
+  add_foreign_key "ratings", "rides"
+  add_foreign_key "ratings", "users"
+  add_foreign_key "ride_reviews", "rides"
+  add_foreign_key "ride_reviews", "users"
   add_foreign_key "ride_users", "rides"
   add_foreign_key "ride_users", "users"
   add_foreign_key "rides", "drivers"
