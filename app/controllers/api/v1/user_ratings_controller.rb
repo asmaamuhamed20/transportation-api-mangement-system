@@ -2,7 +2,7 @@ class Api::V1::UserRatingsController < ApplicationController
     before_action :set_ride, only: [:create, :show]
     
     def create
-        @user_rating = @ride.ratings.build(user_rating_params.merge(user: current_user))
+        @user_rating = @ride.user_ratings.build(user_rating_params.merge(user: current_user))
 
         if  @user_rating.save
             render_json_success( @user_rating)
@@ -12,7 +12,7 @@ class Api::V1::UserRatingsController < ApplicationController
     end
 
     def show
-        @user_rating = @ride.ride_reviews.find(params[:id])
+        @user_rating = @ride.user_ratings.find(params[:id])
         render json: @user_rating
     end
 
@@ -23,7 +23,7 @@ class Api::V1::UserRatingsController < ApplicationController
     end
 
     def user_rating_params
-        params.require(:user_rating).permit(:user_id, :comment, :rating)
+        params.require(:user_rating).permit(:comment, :rating)
     end
 
     def render_error(status, messages)

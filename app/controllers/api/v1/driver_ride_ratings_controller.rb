@@ -3,7 +3,7 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     
     def create
         # driver reviews a user
-        @rating = @ride.ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
+        @rating = @ride.driver_ride_ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
         
         if @rating.save
         render json: @rating, status: :created
@@ -17,7 +17,7 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     end
 
     def index
-        @ratings = Rating.where(ride_id: params[:ride_id])
+        @ratings = DriverRideRating.where(ride_id: params[:ride_id])
         render json: @ratings
     end
 
@@ -37,6 +37,6 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     end
 
     def rating_params
-        params.require(:rating).permit(:ride_id, :user_id, :driver_id, :rating_value, :comment)
+        params.require(:driver_ride_rating).permit(:ride_id, :user_id, :driver_id, :rating_value, :comment)
     end
 end
