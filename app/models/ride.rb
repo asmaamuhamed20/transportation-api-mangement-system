@@ -6,10 +6,9 @@ class Ride < ApplicationRecord
 
   has_many :ride_users
   has_many :users, through: :ride_users, source: :user
-  has_many :ratings
-  has_many :ride_reviews
+  has_many :driver_ride_ratings
+  has_many :user_ratings
 
-  has_one :ride_review, dependent: :destroy
 
   validates :start_time, presence: true
   validates :end_time, presence: true

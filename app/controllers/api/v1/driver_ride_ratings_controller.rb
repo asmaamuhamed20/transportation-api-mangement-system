@@ -1,4 +1,4 @@
-class Api::V1::RatingsController < ApplicationController
+class Api::V1::DriverRideRatingsController < ApplicationController
     before_action :set_ride
     
     def create

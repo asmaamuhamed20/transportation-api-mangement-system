@@ -5,7 +5,9 @@ class Api::V1::DriversController < ApplicationController
     end
 
     def show
-        
+        @driver = Driver.find(params[:id])
+        @average_rating = @driver.average_rating
+        render json: { driver: @driver, average_rating: @average_rating }
     end
 
     def new
@@ -26,12 +28,6 @@ class Api::V1::DriversController < ApplicationController
 
     def destroy
         
-    end
-
-    def average_rating
-        @driver = Driver.find(params[:id])
-        @average_rating = @driver.ratings.average(:rating_value)
-        render json: { average_rating: @average_rating }
     end
 
     private
