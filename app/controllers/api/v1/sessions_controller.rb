@@ -35,7 +35,7 @@ class Api::V1::SessionsController < Devise::SessionsController
       return @user
     else
       render json: {
-        messages: "Cannot get User",
+        messages: "Cannot get User, please register new user",
         is_success: false,
         data: {}
       }, status: 500 
