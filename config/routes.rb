@@ -49,11 +49,6 @@ Rails.application.routes.draw do
           get 'rides_for_driver'
         end
       end
-      resources :users do
-        member do
-          get 'rides_for_user'
-        end
-      end
       resources :users, only: [:create, :show, :update, :destroy]
       resources :users, only: [:destroy]
     end

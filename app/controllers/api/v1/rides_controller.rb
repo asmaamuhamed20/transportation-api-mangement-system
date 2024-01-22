@@ -2,7 +2,7 @@ class Api::V1::RidesController < ApplicationController
     before_action :validate_vehicle_availability, only: [:create]
     before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
     before_action :find_user, only: [:rides_for_user]
-    before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_driver, :rides_for_time_range, :complete_ride]
+    before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_user, :rides_for_time_range, :complete_ride]
     load_and_authorize_resource
 
     def index  #user
@@ -66,8 +66,7 @@ class Api::V1::RidesController < ApplicationController
     end
       
     def rides_for_user
-        user = User.find(params[:user_id])
-        rides = user.rides
+        rides = Ride.where(user_id: @user.id)
         render json: rides, status: :ok
     end
 
