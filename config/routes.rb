@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       get 'system_statistics/total_drivers_count'
     end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
   devise_for :users
     namespace :api, defaults: {format: :json} do
       namespace :v1 do 
@@ -27,21 +27,7 @@ Rails.application.routes.draw do
           post 'complete_ride'
         end
         resources :user_ratings, only: [:create, :show]
-        resources :driver_ride_ratings, only: [:create, :show, :index]
-      end
-      resources :system_statistics do 
-        collection do
-          get :total_rides_count
-          get :daily_rides_count
-          get :total_drivers_count
-        end
-      end
-      resources :system_statistics do
-        collection do
-          get :total_rides_count
-          get :daily_rides_count
-          get :total_drivers_count
-        end
+        resources :driver_ride_ratings, only: [:create]
       end
       resources :drivers do
         member do
@@ -54,10 +40,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  get "up" => "rails/health#show", as: :rails_health_check
 end
