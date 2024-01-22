@@ -15,13 +15,12 @@ Rails.application.routes.draw do
             post "sign_in", to: "sessions#create"
           end
       resources :vehicles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
-      resources :rides, only: [:index, :show, :new, :create, :edit, :update, :destroy]
       resources :rides do
         member do
           patch 'swap_vehicle'
           post 'add_user', to: 'rides#add_user_to_ride'
           delete 'remove_user', to: 'rides#remove_user'
-          post 'replace_user'
+          post 'replace_user/:new_user_id',  to: 'rides#replace_user'
           get 'rides_for_driver'
           get 'rides_for_user'
           get 'rides_for_date'

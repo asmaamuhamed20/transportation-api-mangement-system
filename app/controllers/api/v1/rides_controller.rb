@@ -5,6 +5,7 @@ class Api::V1::RidesController < ApplicationController
     before_action :find_user, only: [:rides_for_user]
     before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_driver, :rides_for_time_range, :complete_ride]
     load_and_authorize_resource
+    
     def index  #user
         rides = Ride.all
         render_json_success(rides: rides)
@@ -49,6 +50,10 @@ class Api::V1::RidesController < ApplicationController
         ride = find_ride
         user = User.find(params[:user_id])
         process_remove_user(ride, user)
+    end
+
+    def show
+        
     end
 
 
