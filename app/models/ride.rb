@@ -19,14 +19,22 @@ class Ride < ApplicationRecord
 
   def add_user(user)
     users << user unless users.include?(user)
+    save
   end  
 
   def remove_user(user)
     users.delete(user)
   end
 
-  def replace_user(new_user)
-    users.delete_all
-    users << new_user
+  def replace_user(new_user_id)
+    new_user = User.find_by(id: new_user_id)
+
+    unless new_user
+      return false
+    end
+    
+    self.users.delete_all
+    self.users << new_user
+    true
   end
 end

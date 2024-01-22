@@ -20,8 +20,7 @@ Rails.application.routes.draw do
           patch 'swap_vehicle'
           post 'add_user', to: 'rides#add_user_to_ride'
           delete 'remove_user', to: 'rides#remove_user'
-          post 'replace_user/:new_user_id',  to: 'rides#replace_user'
-          get 'rides_for_driver'
+          post 'replace_user'
           get 'rides_for_user'
           get 'rides_for_date'
           get 'rides_for_time_range'
@@ -47,6 +46,12 @@ Rails.application.routes.draw do
       resources :drivers do
         member do
           get 'average_rating'
+          get 'rides_for_driver'
+        end
+      end
+      resources :users do
+        member do
+          get 'rides_for_user'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]

@@ -1,48 +1,48 @@
 class Api::V1::RidesController < ApplicationController
     before_action :validate_vehicle_availability, only: [:create]
     before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
-    before_action :find_driver, only: [:rides_for_driver]
     before_action :find_user, only: [:rides_for_user]
     before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_driver, :rides_for_time_range, :complete_ride]
     load_and_authorize_resource
-    
+
     def index  #user
         rides = Ride.all
         render_json_success(rides: rides)
     end
 
     def create
-        ride = Ride.new(ride_params)
-        ride.status = :active
+        users = find_users(params[:user_ids])
+        ride = Ride.set_ride(ride_params)
+
         if vehicle_available?(ride)
-            if ride.save
-            render json: ride, status: :created
+        ride.users << users
+
+            if save_ride(ride)
+                render json: ride, status: :created
             else
-                render_unprocessable_entity(ride.errors.full_messages)
+                render_error(:unprocessable_entity, ride.errors.full_messages)
             end
         else
-            render_error(:unprocessable_entity, 'Selected vehicle is not available during this time')
+        render_error(:unprocessable_entity, 'Selected vehicle is not available during this time')
         end
     end
     
     def swap_vehicle
         new_vehicle_id = params[:new_vehicle_id]
         swap_vehicle = find_vehicle(new_vehicle_id)
-      
+    
         if swap_vehicle
-          if @ride.update(vehicle: swap_vehicle)
-            render json: { message: 'Vehicle swapped successfully', ride: @ride }, status: :ok
-          else
-            render_error(:unprocessable_entity, @ride.errors.full_messages)
-          end
+          ride = find_ride
+          process_vehicle_swap(ride, swap_vehicle)
         else
-            head :not_found
+          head :not_found
         end
     end
 
     def add_user_to_ride
         ride = find_ride
-        user = find_user(params[:user_id])
+        find_user
+        user = @user
         process_add_user(ride, user)
     end
       
@@ -58,20 +58,13 @@ class Api::V1::RidesController < ApplicationController
 
 
     def replace_user
-        new_user = find_user(params[:new_user_id])
-    
-        if @ride.replace_user(new_user)
+        if @ride.replace_user(params[:new_user_id])
           render_json_success('User replaced in the ride successfully', ride: @ride)
         else
-          render_error(:unprocessable_entity, 'Failed to replace user in the ride')
+          render_error(:not_found, 'User not found')
         end
     end
-
-    def rides_for_driver
-        rides = Ride.where(driver: @driver)
-        render json: rides, status: :ok
-    end
-
+      
     def rides_for_user
         user = User.find(params[:user_id])
         rides = user.rides
@@ -112,15 +105,25 @@ class Api::V1::RidesController < ApplicationController
         vehicle.available?(ride.start_time, ride.end_time)
     end
     
+    # create ride - check whether the selected vehicle is available?
     def validate_vehicle_availability
         vehicle = Vehicle.find(params[:ride][:vehicle_id])
         ride = Ride.new(ride_params)
         
         unless vehicle_available?(ride)
-            render_unprocessable_entity('Selected vehicle is not available during this time')
+          render_error(:unprocessable_entity, 'Selected vehicle is not available during this time')
         end
-    end 
+    end
 
+    def process_vehicle_swap(ride, swap_vehicle)
+        if vehicle_available?(ride) && ride.update(vehicle: swap_vehicle)
+            render_json_success('Vehicle swapped successfully', ride: ride)
+        else
+            error_message = vehicle_available?(ride) ? ride.errors.full_messages : 'Selected vehicle is not available during this time'
+            render_error(:unprocessable_entity, error_message)
+        end
+    end
+      
     def find_ride
         @ride = Ride.find(params[:id])
     end
@@ -177,5 +180,4 @@ class Api::V1::RidesController < ApplicationController
           render_error(:unprocessable_entity, { error: 'Failed to remove user from the ride', errors: ride.errors.full_messages })
         end
     end
-
 end
