@@ -23,6 +23,11 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_json_success(total_drivers: total_drivers) 
   end
 
+  def  highest_rides_users
+    highest_rides_users = User.joins(:rides).group('users.id').order('COUNT(rides.id) DESC').limit(1)
+    render_json_success(highest_rides_users: highest_rides_users)
+  end
+
   private
 
   def authorize_admin
