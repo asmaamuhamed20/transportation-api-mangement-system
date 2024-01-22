@@ -1,6 +1,5 @@
 class Api::V1::SystemStatisticsController < ApplicationController
-  before_action :authorize_admin, only: [:total_rides_count, :daily_rides_count, :total_drivers_count] 
-
+  before_action :authorize_admin
 
   def total_rides_count
     total_rides = Ride.count
@@ -26,6 +25,11 @@ class Api::V1::SystemStatisticsController < ApplicationController
   def  highest_rides_users
     highest_rides_users = User.joins(:rides).group('users.id').order('COUNT(rides.id) DESC').limit(1)
     render_json_success(highest_rides_users: highest_rides_users)
+  end
+
+  def highest_rides_drivers
+    highest_rides_drivers = Driver.joins(:rides).group('drivers.id').order('COUNT(rides.id) DESC').limit(1)
+    render_json_success(highest_rides_drivers: highest_rides_drivers) 
   end
 
   private

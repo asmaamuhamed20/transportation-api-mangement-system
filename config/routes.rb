@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       get 'system_statistics/daily_rides_count'
       get 'system_statistics/total_drivers_count'
       get 'system_statistics/highest_rides_users'
+      get 'system_statistics/highest_rides_drivers'
     end
   end
 
