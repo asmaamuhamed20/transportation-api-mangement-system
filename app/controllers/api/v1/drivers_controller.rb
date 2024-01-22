@@ -23,7 +23,13 @@ class Api::V1::DriversController < ApplicationController
     end
 
     def create
-        
+        @driver = Driver.new(driver_params)
+
+        if @driver.save
+          render_json_success('Driver created successfully', driver: @driver)
+        else
+          render_error(:unprocessable_entity, @driver.errors.full_messages)
+        end
     end
 
     def edit
@@ -46,6 +52,10 @@ class Api::V1::DriversController < ApplicationController
         end
     end
 
+    def driver_params
+        params.require(:driver).permit(:driver_name)
+    end
+
     def find_driver
         @driver = Driver.find_by(id: params[:id])
     
@@ -60,6 +70,6 @@ class Api::V1::DriversController < ApplicationController
       
     def render_json_success(message, data = {})
         render json: { success: true, message: message, data: data }, status: :ok
-    end 
+    end
 
 end
