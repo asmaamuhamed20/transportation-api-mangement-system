@@ -1,14 +1,19 @@
 class Api::V1::SessionsController < Devise::SessionsController
   before_action :sign_in_params, only: :create
   before_action :load_user, only: :create
+  respond_to :json
+
   # sign in
   def create
     if @user.valid_password?(sign_in_params[:password])
-      sign_in "user", @user
+      sign_in  @user
+
+      token = JsonWebToken.encode(user_id: @user.id)
+
       render json: {
         messages: "Signed In Successfully",
         is_success: true,
-        data: {user: @user}
+        data: {user: @user, token: token}
       }, status: :ok
     else
       render json: {

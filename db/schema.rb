@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_21_134906) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_22_004031) do
   create_table "driver_ride_ratings", force: :cascade do |t|
     t.integer "ride_id", null: false
     t.integer "user_id", null: false
@@ -50,7 +50,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_21_134906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
-    t.integer "rating"
     t.index ["driver_id"], name: "index_rides_on_driver_id"
     t.index ["user_id"], name: "index_rides_on_user_id"
     t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
@@ -76,7 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_21_134906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-    t.string "roles"
+    t.string "role"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

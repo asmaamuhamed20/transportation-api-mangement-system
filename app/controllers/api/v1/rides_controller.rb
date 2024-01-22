@@ -3,7 +3,8 @@ class Api::V1::RidesController < ApplicationController
     before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
     before_action :find_driver, only: [:rides_for_driver]
     before_action :find_user, only: [:rides_for_user]
-
+    before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_driver, :rides_for_time_range, :complete_ride]
+    load_and_authorize_resource
     def index  #user
         rides = Ride.all
         render_json_success(rides: rides)
@@ -91,6 +92,11 @@ class Api::V1::RidesController < ApplicationController
                 
     private
     
+    def authorize_admin
+        unless current_user.admin?
+          render json: { error: 'Not authorized' }, status: :unauthorized
+        end
+    end
     
     def ride_params
         params.require(:ride).permit(:user_id, :driver_id, :vehicle_id, :pickup_stop, :drop_off_stop, :start_time, :end_time)
