@@ -16,6 +16,7 @@ Rails.application.routes.draw do
           end
       resources :vehicles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
       resources :rides do
+        resources :driver_ride_ratings, only: [:create], controller: 'driver_ride_ratings'
         member do
           patch 'swap_vehicle'
           post 'add_user', to: 'rides#add_user_to_ride'
@@ -27,12 +28,16 @@ Rails.application.routes.draw do
           post 'complete_ride'
         end
         resources :user_ratings, only: [:create, :show]
-        resources :driver_ride_ratings, only: [:create]
       end
       resources :drivers do
         member do
           get 'average_rating'
           get 'rides_for_driver'
+        end
+      end
+      resources :driver_ride_ratings, only: [:show] do
+        collection do
+          post 'average_rating_for_driver'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]

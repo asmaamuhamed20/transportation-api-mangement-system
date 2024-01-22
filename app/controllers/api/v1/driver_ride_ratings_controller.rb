@@ -1,6 +1,6 @@
 class Api::V1::DriverRideRatingsController < ApplicationController
-    before_action :set_ride
-    before_action :authorize_admin, only: [:create]
+    before_action :set_ride, only: [:create]
+    before_action :authorize_admin, only: [:average_rating_for_driver]
   
     def create
       @rating = @ride.driver_ride_ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
@@ -21,6 +21,21 @@ class Api::V1::DriverRideRatingsController < ApplicationController
       render json: { success: true, data: @ratings }
     end
   
+    def average_rating_for_driver
+      driver_id = params[:id]
+      ratings = DriverRideRating.where(driver_id: driver_id)
+  
+      if ratings.present?
+        total_ratings = ratings.count
+        sum_of_ratings = ratings.sum(:rating_value)
+        average_rating = sum_of_ratings.to_f / total_ratings
+  
+        render_json_success({ driver_id: driver_id, average_rating: average_rating })
+      else
+        render_error(:not_found, 'No ratings available for the driver')
+      end
+    end
+  
     private
   
     def authorize_admin
@@ -34,12 +49,15 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     end
   
     def rating_params
-        params.require(:rating).permit(:rating_value, :comment)
+      params.require(:rating).permit(:rating_value, :comment)
     end
-      
   
     def render_error(status, message)
       render json: { success: false, error: message }, status: status
     end
-end
+  
+    def render_json_success(data = {})
+      render json: { success: true, data: data }, status: :ok
+    end 
+  end
   
