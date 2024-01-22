@@ -2,7 +2,7 @@ module Api
     module V1
       class VehiclesController < ApplicationController
         before_action :set_vehicle, only: [:show, :edit, :update, :destroy]
-        access all: [:show, :index], user: {except: [:destroy, :new, :create, :update, :edit]}, admin: :all
+        before_action :authorize_admin
   
         def index
           render json: Vehicle.all
@@ -38,12 +38,20 @@ module Api
         end
   
         def destroy
-          @vehicle.destroy
-          head :no_content
+          if @vehicle.destroy
+            render json: { success: true, message: 'Vehicle removed successfully' }, status: :ok
+          else
+            render json: { error: @vehicle.errors.full_messages }, status: :unprocessable_entity
+          end
         end
   
         private
-  
+        
+        def authorize_admin
+          unless current_user.admin?
+            render json: { error: 'Not authorized' }, status: :unauthorized
+          end
+        end
         def set_vehicle
           @vehicle = Vehicle.find(params[:id])
         end
