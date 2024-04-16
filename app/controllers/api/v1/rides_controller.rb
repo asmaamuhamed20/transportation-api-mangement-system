@@ -11,13 +11,13 @@ class Api::V1::RidesController < ApplicationController
     end
 
     def create
-        users = find_users(params[:user_ids])
-        ride = Ride.set_ride(ride_params)
+        ride = Ride.new(ride_params)
+        users = User.where(id: params[:user_ids])
 
         if vehicle_available?(ride)
         ride.users << users
 
-            if save_ride(ride)
+            if ride.save
                 render json: ride, status: :created
             else
                 render_error(:unprocessable_entity, ride.errors.full_messages)

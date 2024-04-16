@@ -10,7 +10,7 @@ class Ability
     when :admin
       can :manage, :all
     when :user
-      can :read, Ride
+      can :read, :update, Ride
       # Add other permissions for regular users as needed
     else
       # Guest user or unexpected role, no special permissions

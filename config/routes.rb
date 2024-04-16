@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       end
       resources :driver_ride_ratings, only: [:show] do
         collection do
-          post 'average_rating_for_driver'
+          get 'average_rating_for_driver'
         end
       end
       resources :users, only: [:create, :show, :update, :destroy]

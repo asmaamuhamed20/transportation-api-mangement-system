@@ -37,11 +37,10 @@ class Api::V1::SystemStatisticsController < ApplicationController
     usage_percentage_by_vehicle = {}
   
     total_used_time_by_vehicle.each do |vehicle_id, total_used_time|
-      total_available_time = 100.hours.to_i
-      unless total_available_time.zero?
-        usage_percentage = (total_used_time.to_f / total_available_time) * 100
-        usage_percentage_by_vehicle[vehicle_id] = usage_percentage
-      end
+      total_available_time = Vehicle.find(vehicle_id).available_time.to_i.hours # Fetch available time from the database
+      next if total_available_time.zero?
+      usage_percentage = (total_used_time.to_f / total_available_time) * 100
+      usage_percentage_by_vehicle[vehicle_id] = usage_percentage
     end
   
     render_json_success({ usage_percentage_by_vehicle: usage_percentage_by_vehicle })
@@ -57,7 +56,7 @@ class Api::V1::SystemStatisticsController < ApplicationController
 
   def calculate_total_time(start_time, end_time)
     return 0 if start_time.nil? || end_time.nil?
-    total_seconds = (end_time - start_time).to_i
+     (end_time - start_time).to_i
   end
 
   def calculate_total_used_time
@@ -72,11 +71,6 @@ class Api::V1::SystemStatisticsController < ApplicationController
     total_used_time_by_vehicle
   end
 
-  def calculate_usage_percentage(total_used_time)
-    total_available_time = 100.hours.to_i
-    return 0 if total_available_time.zero?
-    (total_used_time.to_f / total_available_time) * 100
-  end
 
   def render_json_success(data, status = :ok)
     render json: { success: true, data: data }, status: status
