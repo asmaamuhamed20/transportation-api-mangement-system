@@ -46,6 +46,13 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_json_success({ usage_percentage_by_vehicle: usage_percentage_by_vehicle })
   end
 
+  def rides_for_driver  #count rides for each driver
+    driver_id = params[:driver_id]
+    ride_count = Ride.where(driver_id: driver_id).count
+    render_json_success({ driver_id: driver_id, ride_count: ride_count })
+  end
+
+
   private
 
   def authorize_admin

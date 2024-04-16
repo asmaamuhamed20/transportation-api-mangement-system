@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       get 'system_statistics/highest_rides_users'
       get 'system_statistics/highest_rides_drivers'
       get 'system_statistics/usage_percentage'
+      get 'system_statistics/rides_for_driver', to: 'system_statistics#rides_for_driver'
     end
   end
 
