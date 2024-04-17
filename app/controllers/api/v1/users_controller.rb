@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate_user!, except: [:rides_for_date]
+  before_action :authenticate_user!, except: [:rides_for_date, :view_rides]
   before_action :authorize_admin, only: [:destroy]
 
   #access all: [:show, :index], user: { except: [:destroy, :new, :create, :update, :edit] }, admin: :all
@@ -41,6 +41,16 @@ class Api::V1::UsersController < ApplicationController
       render json: { message: "User deleted successfully", is_success: true }, status: :ok
     else
       render json: { message: "Failed to delete user", is_success: false }, status: :unprocessable_entity
+    end
+  end
+  
+  def view_rides
+    user = current_user
+    @rides = user.rides.includes(:driver, :vehicle).order(start_time: :desc)
+    if @rides.present?
+      render json: @rides, status: :ok
+    else
+      render_error(:not_found, 'No rides found for the current user')
     end
   end
 

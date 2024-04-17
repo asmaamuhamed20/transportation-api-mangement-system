@@ -11,10 +11,13 @@ Rails.application.routes.draw do
       get 'user_ratings/average_rating_by_user', to: 'user_ratings#average_rating_by_user'
 
       resources :users, only: [] do
-        get 'rides_for_date', on: :member
+        collection do
+        get 'me/rides', to: 'users#view_rides'
       end
+      get 'rides_for_date', to: 'users#rides_for_date', on: :member
     end
   end
+end
 
     devise_for :users
     namespace :api, defaults: {format: :json} do
