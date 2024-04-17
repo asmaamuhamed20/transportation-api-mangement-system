@@ -9,6 +9,10 @@ Rails.application.routes.draw do
       get 'system_statistics/usage_percentage'
       get 'system_statistics/rides_for_driver', to: 'system_statistics#rides_for_driver'
       get 'user_ratings/average_rating_by_user', to: 'user_ratings#average_rating_by_user'
+
+      resources :users, only: [] do
+        get 'rides_for_date', on: :member
+      end
     end
   end
 

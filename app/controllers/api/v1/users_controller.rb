@@ -1,6 +1,8 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate_user!
-  access all: [:show, :index], user: { except: [:destroy, :new, :create, :update, :edit] }, admin: :all
+  before_action :authenticate_user!, except: [:rides_for_date]
+  before_action :authorize_admin, only: [:destroy]
+
+  #access all: [:show, :index], user: { except: [:destroy, :new, :create, :update, :edit] }, admin: :all
 
   def index
     users = User.all
@@ -42,6 +44,18 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def rides_for_date
+    user = current_user
+    date = params[:date]
+    @rides = user.rides.where('DATE(start_time) = ?', date)
+
+    if @rides.present?
+      render json: @rides
+    else
+      render_error(:not_found, 'No rides found for specified date')
+    end
+  end
+
   private
 
   def authorize_admin
@@ -50,5 +64,9 @@ class Api::V1::UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:username, :email, :password, :password_confirmation)
+  end
+
+  def render_error(status, message)
+    render json: { error: message }, status: status 
   end
 end
