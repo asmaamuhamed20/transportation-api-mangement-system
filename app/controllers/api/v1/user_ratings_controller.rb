@@ -16,6 +16,21 @@ class Api::V1::UserRatingsController < ApplicationController
         render json: @user_rating
     end
 
+    def average_rating_by_user  #Average rating provided by a specific user
+        user_id = params[:user_id]
+        user_ratings = UserRating.where(user_id: user_id)
+        if user_ratings.present?
+            total_ratings = user_ratings.count
+            sum_of_ratings = user_ratings.sum(:rating)
+            average_rating = sum_of_ratings.to_f / total_ratings
+
+            render_json_success({ user_id: user_id, average_rating: average_rating })
+        else     
+            render_error(:not_found, 'No ratings available for the user') 
+        end
+    end
+
+
     private
 
     def set_ride
