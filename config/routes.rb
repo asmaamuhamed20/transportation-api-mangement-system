@@ -15,6 +15,13 @@ Rails.application.routes.draw do
         get 'me/rides', to: 'users#view_rides'
       end
       get 'rides_for_date', to: 'users#rides_for_date', on: :member
+      put 'update', to: 'users#update'
+    end
+
+    resources :drivers do
+      member do
+        put 'update', to: 'drivers#update'
+      end
     end
   end
 end
@@ -45,7 +52,7 @@ end
           end
         end
 
-        resources :drivers do
+        resources :drivers, only: [:index, :show, :create, :update, :destroy] do
           member do
             get 'average_rating'
             get 'rides_for_driver'

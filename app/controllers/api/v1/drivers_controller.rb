@@ -37,7 +37,14 @@ class Api::V1::DriversController < ApplicationController
     end
 
     def update
-        
+        @driver = Driver.find(params[:id])
+        authorize_admin
+
+        if @driver.update(driver_params)
+        render json: @driver, status: :ok
+        else
+        render json: { errors: driver.errors.full_messages }, status: :unprocessable_entity
+        end
     end
 
     def destroy

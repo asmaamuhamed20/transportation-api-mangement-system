@@ -1,6 +1,7 @@
 class Api::V1::UsersController < ApplicationController
   before_action :authenticate_user!, except: [:rides_for_date, :view_rides]
-  before_action :authorize_admin, only: [:destroy]
+  before_action :authorize_admin, only: [:destroy, :update]
+  
 
   #access all: [:show, :index], user: { except: [:destroy, :new, :create, :update, :edit] }, admin: :all
 
@@ -53,14 +54,18 @@ class Api::V1::UsersController < ApplicationController
       render_error(:not_found, 'No rides found for the current user')
     end
   end
-
+  
   def rides_for_date
-    user = current_user
     date = params[:date]
-    @rides = user.rides.where('DATE(start_time) = ?', date)
-
+    if current_user.admin?
+      @rides = Ride.where('DATE(start_time) = ?', date).includes(:driver, :vehicle).order(start_time: :desc)
+    else
+      user = current_user
+      @rides = user.rides.where('DATE(start_time) = ?', date).includes(:driver, :vehicle).order(start_time: :desc)
+    end
+  
     if @rides.present?
-      render json: @rides
+      render json: @rides, status: :ok
     else
       render_error(:not_found, 'No rides found for specified date')
     end
@@ -71,7 +76,8 @@ class Api::V1::UsersController < ApplicationController
   def authorize_admin
     authorize User, :admin?
   end
-
+  
+  
   def user_params
     params.require(:user).permit(:username, :email, :password, :password_confirmation)
   end

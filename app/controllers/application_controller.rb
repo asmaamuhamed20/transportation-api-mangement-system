@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
     rescue JWT::VerificationError, JWT::DecodeError
       render json: { error: 'Not authorized' }, status: :unauthorized
     end
-  
+    
     def http_token
       @http_token ||= if request.headers['Authorization'].present?
         request.headers['Authorization'].split(' ').last
