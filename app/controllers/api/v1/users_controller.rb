@@ -1,9 +1,7 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate_user!, except: [:rides_for_date, :view_rides]
   before_action :authorize_admin, only: [:destroy, :update]
+  #before_action :authenticate_user!, except: [:rides_for_date, :view_rides]
   
-
-  #access all: [:show, :index], user: { except: [:destroy, :new, :create, :update, :edit] }, admin: :all
 
   def index
     users = User.all
@@ -74,12 +72,14 @@ class Api::V1::UsersController < ApplicationController
   private
 
   def authorize_admin
-    authorize User, :admin?
+    unless current_user&.admin?
+      render json: { error: "Only admin users are authorized to perform this action" }, status: :unauthorized
+    end
   end
   
   
   def user_params
-    params.require(:user).permit(:username, :email, :password, :password_confirmation)
+    params.require(:user).permit(:username, :email, :password, :password_confirmation, :role)
   end
 
   def render_error(status, message)

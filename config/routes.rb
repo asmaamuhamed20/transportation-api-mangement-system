@@ -13,9 +13,8 @@ Rails.application.routes.draw do
       resources :users, only: [] do
         collection do
         get 'me/rides', to: 'users#view_rides'
+        get 'rides_for_date', to: 'users#rides_for_date'
       end
-      get 'rides_for_date', to: 'users#rides_for_date', on: :member
-      put 'update', to: 'users#update'
     end
 
     resources :drivers do
@@ -65,8 +64,7 @@ end
           end
         end
 
-        resources :users, only: [:create, :show, :update, :destroy]
-        resources :users, only: [:destroy]
+        resources :users, only: [:index, :create, :update, :destroy]
       end
     end
 
