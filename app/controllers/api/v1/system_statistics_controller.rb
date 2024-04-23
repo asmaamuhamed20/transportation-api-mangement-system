@@ -27,9 +27,31 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_json_success(highest_rides_users: highest_rides_users)
   end
 
+  def highest_rides_users_by_month
+    month = params[:month].to_i
+    year = params[:year].to_i
+    highest_rides_users = find_highest_rides_users_by_month(month, year)
+    if highest_rides_users
+      render_json_success(highest_rides_users_by_month: highest_rides_users)
+    else
+      render_json_error("No data found for the specified month and year", :not_found)
+    end
+  end
+
   def highest_rides_drivers
     highest_rides_drivers = Driver.joins(:rides).group('drivers.id').order('COUNT(rides.id) DESC').limit(1)
     render_json_success(highest_rides_drivers: highest_rides_drivers) 
+  end
+
+  def highest_rides_drivers_by_month
+    month = params[:month].to_i
+    year = params[:year].to_i
+    highest_rides_drivers = find_highest_rides_drivers_by_month(month, year)
+    if highest_rides_drivers
+      render_json_success(highest_rides_drivers_by_month: highest_rides_drivers)
+    else
+      render_json_error("No data found for the specified month and year", :not_found)
+    end
   end
 
   def usage_percentage
@@ -93,9 +115,29 @@ class Api::V1::SystemStatisticsController < ApplicationController
   
     total_available_time
   end
+
+  def find_highest_rides_users_by_month(month, year)
+    User.joins(:rides)
+        .where(rides: { start_time: (Time.zone.parse("#{year}-#{month}-01")..Time.zone.parse("#{year}-#{month}-31 23:59:59")) })
+        .group(:id)
+        .order('COUNT(rides.id) DESC')
+        .first
+  end
+
+  def find_highest_rides_drivers_by_month(month, year)
+    Driver.joins(:rides)
+          .where(rides: { start_time: (Time.zone.parse("#{year}-#{month}-01")..Time.zone.parse("#{year}-#{month}-31 23:59:59")) })
+          .group(:id)
+          .order('COUNT(rides.id) DESC')
+          .first
+  end
   
 
   def render_json_success(data, status = :ok)
     render json: { success: true, data: data }, status: status
+  end
+
+  def render_json_error(message, status = :unprocessable_entity)
+    render json: { success: false, error: message }, status: status
   end
 end
