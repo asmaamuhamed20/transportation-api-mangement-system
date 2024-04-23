@@ -7,7 +7,7 @@ class Api::V1::SystemStatisticsController < ApplicationController
   end
 
   def daily_rides_count
-    start_date = Date.parse('2024-01-18')
+    start_date = Date.parse('2024-01-01')
     end_date = Date.today 
     daily_counts = {}
     (start_date..end_date).each do |date|
@@ -33,17 +33,19 @@ class Api::V1::SystemStatisticsController < ApplicationController
   end
 
   def usage_percentage
-    total_used_time_by_vehicle = calculate_total_used_time
     usage_percentage_by_vehicle = {}
+
+    Vehicle.all.each do |vehicle|
+      total_used_time = calculate_total_used_time(vehicle)
+      total_available_time = calculate_total_available_time(vehicle)
   
-    total_used_time_by_vehicle.each do |vehicle_id, total_used_time|
-      total_available_time = Vehicle.find(vehicle_id).available_time.to_i.hours # Fetch available time from the database
       next if total_available_time.zero?
+  
       usage_percentage = (total_used_time.to_f / total_available_time) * 100
-      usage_percentage_by_vehicle[vehicle_id] = usage_percentage
+      usage_percentage_by_vehicle[vehicle.id] = usage_percentage
     end
   
-    render_json_success({ usage_percentage_by_vehicle: usage_percentage_by_vehicle })
+    render_json_success(usage_percentage_by_vehicle: usage_percentage_by_vehicle)
   end
 
   def rides_for_driver  #count rides for each driver
@@ -66,18 +68,32 @@ class Api::V1::SystemStatisticsController < ApplicationController
      (end_time - start_time).to_i
   end
 
-  def calculate_total_used_time
+  def calculate_total_used_time(vehicle)
     total_used_time_by_vehicle = {}
 
-    Ride.all.each do |ride|
-      vehicle_id = ride.vehicle_id
-      total_used_time_by_vehicle[vehicle_id] ||= 0
-      total_used_time_by_vehicle[vehicle_id] += calculate_total_time(ride.start_time, ride.end_time)
+    total_used_time = 0
+
+    vehicle.rides.each do |ride|
+      total_used_time += calculate_total_time(ride.start_time, ride.end_time)
     end
-  
-    total_used_time_by_vehicle
+    total_used_time
   end
 
+  def calculate_total_available_time(vehicle)
+    total_available_time = 0
+  
+    vehicle.available_time_slots.each do |time_slot|
+      start_time = time_slot.first
+      end_time = time_slot.last
+  
+      next if start_time.nil? || end_time.nil?
+  
+      total_available_time += (end_time - start_time).to_i
+    end
+  
+    total_available_time
+  end
+  
 
   def render_json_success(data, status = :ok)
     render json: { success: true, data: data }, status: status
