@@ -1,7 +1,7 @@
 class Api::V1::DriversController < ApplicationController
     before_action :find_driver, only: [:update, :destroy, :rides_for_driver]   
     before_action :authorize_admin, only: [:create, :update, :destroy, :rides_for_driver] 
-   # load_and_authorize_resource
+
 
    #  GET: http://localhost:3000/api/v1/drivers
     def index
