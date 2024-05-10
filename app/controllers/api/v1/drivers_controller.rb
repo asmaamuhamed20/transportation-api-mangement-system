@@ -1,62 +1,47 @@
 class Api::V1::DriversController < ApplicationController
-    before_action :find_driver, only: [:rides_for_driver]   
-    before_action :authorize_admin, only: [:create, :rides_for_driver] 
-    load_and_authorize_resource
+    before_action :find_driver, only: [:update, :destroy, :rides_for_driver]   
+    before_action :authorize_admin, only: [:create, :update, :destroy, :rides_for_driver] 
+   # load_and_authorize_resource
 
+   #  GET: http://localhost:3000/api/v1/drivers
     def index
         render json: Driver.all
     end
 
-    def show
-        @driver = Driver.find(params[:id])
-        @average_rating = @driver.average_rating
-        render json: { driver: @driver, average_rating: @average_rating }
-    end
-
-    def rides_for_driver
-        rides = Ride.where(driver: @driver)
-        render json: rides, status: :ok
-    end
-
-    def new
-        
-    end
-
+    # POST: http://localhost:3000/api/v1/drivers
     def create
         @driver = Driver.new(driver_params)
-
         if @driver.save
-          render_json_success('Driver created successfully', driver: @driver)
+            render_created(@driver)
         else
           render_error(:unprocessable_entity, @driver.errors.full_messages)
         end
     end
 
-    def edit
-        
-    end
-
+    # PUT: http://localhost:3000/api/v1/drivers/5
     def update
-        @driver = Driver.find(params[:id])
-        authorize_admin
-
         if @driver.update(driver_params)
-        render json: @driver, status: :ok
+            render json: @driver, status: :ok
         else
-        render json: { errors: driver.errors.full_messages }, status: :unprocessable_entity
+            render_unprocessable_entity(@driver.errors.full_messages)
         end
     end
 
+    # DELETE: http://localhost:3000/api/v1/drivers/5
     def destroy
-        
+        @driver.destroy
+        head :no_content   
+    end
+
+    # GET: http://localhost:3000/api/v1/drivers/2/rides_for_driver    
+    def rides_for_driver
+        render json: @driver.rides, status: :ok
     end
 
     private
 
     def authorize_admin
-        unless current_user.admin?
-          render json: { error: 'Not authorized' }, status: :unauthorized
-        end
+        render_unauthorized('Not authorized') unless current_user.admin?
     end
 
     def driver_params
@@ -65,18 +50,22 @@ class Api::V1::DriversController < ApplicationController
 
     def find_driver
         @driver = Driver.find_by(id: params[:id])
-    
-        unless @driver
-          render_error(:not_found, 'Driver not found')
-        end
+        render_not_found('Driver not found') unless @driver
     end
 
-    def render_error(status, messages)
-        render json: { error: messages }, status: status
+    def render_unprocessable_entity(messages)
+        render json: { error: messages }, status: :unprocessable_entity
     end
       
-    def render_json_success(message, data = {})
-        render json: { success: true, message: message, data: data }, status: :ok
+    def render_created(driver)
+        render json: { success: true, message: 'Driver created successfully', driver: driver }, status: :created
     end
 
+    def render_unauthorized(message)
+        render json: { error: message }, status: :unauthorized
+    end
+
+    def render_not_found(message)
+        render json: { error: message }, status: :not_found
+    end
 end
