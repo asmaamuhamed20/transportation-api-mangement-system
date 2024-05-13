@@ -24,6 +24,7 @@ Rails.application.routes.draw do
         put 'update', to: 'drivers#update'
       end
     end
+    resources :driver_ride_ratings, only: [:create, :index], controller: 'driver_ride_ratings'
   end
 end
 
@@ -55,13 +56,12 @@ end
 
         resources :drivers, only: [:index, :show, :create, :update, :destroy] do
           member do
-            get 'average_rating'
             get 'rides_for_driver'
           end
         end
 
         resources :driver_ride_ratings, only: [:show] do
-          collection do
+          member do
             get 'average_rating_for_driver'
           end
         end
