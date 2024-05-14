@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       end
 
       # Users
-      resources :users, only: [] do
+      resources :users, only: [:index, :update, :destroy] do
         collection do
           get 'me/rides', to: 'users#view_rides'
           get 'rides_for_date', to: 'users#rides_for_date'
