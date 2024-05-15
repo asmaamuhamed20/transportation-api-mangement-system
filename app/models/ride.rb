@@ -37,4 +37,8 @@ class Ride < ApplicationRecord
     self.users << new_user
     true
   end
+
+  def can_be_rated_by?(user)
+    user_id == user&.id
+  end
 end

@@ -47,7 +47,7 @@ Rails.application.routes.draw do
       end
 
       # User Ratings
-      resources :user_ratings, only: [] do
+      resources :user_ratings, only: [:create, :show] do
         collection do
           get 'average_rating_by_user'
         end
