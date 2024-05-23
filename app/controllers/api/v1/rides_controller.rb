@@ -9,7 +9,7 @@ class Api::V1::RidesController < ApplicationController
        render json: Ride.all 
     end
 
-    # POST: http://localhost:3000/api/v1/rides
+    # POST: /api/v1/rides
     def create
         ride = Ride.new(ride_params)
         users = find_user(params[:user_id])
@@ -21,26 +21,26 @@ class Api::V1::RidesController < ApplicationController
         end
     end
     
-    # PATCH: http://localhost:3000/api/v1/rides/20/swap_vehicle
+    # PATCH: /api/v1/rides/20/swap_vehicle
     def swap_vehicle
         swap_vehicle = find_vehicle(params[:new_vehicle_id])
         return head :not_found unless swap_vehicle
         process_vehicle_swap(swap_vehicle)
     end
 
-    # POST: http://localhost:3000/api/v1/rides/20/add_user
+    # POST: /api/v1/rides/20/add_user
     def add_user_to_ride
         user = find_user(params[:user_id])
         process_add_user(user)
     end
     
-    # DELETE: http://localhost:3000/api/v1/rides/20/remove_user
+    # DELETE: /api/v1/rides/20/remove_user
     def remove_user
         user = find_user(params[:user_id])
         process_remove_user(user)
     end
 
-    # POST: http://localhost:3000/api/v1/rides/21/replace_user
+    # POST: /api/v1/rides/21/replace_user
     def replace_user
         if @ride.replace_user(params[:new_user_id])
           render_json_success('User replaced in the ride successfully', ride: @ride)
@@ -54,20 +54,20 @@ class Api::V1::RidesController < ApplicationController
         render json: rides, status: :ok
     end
 
-    # GET: http://localhost:3000/api/v1/rides/1/rides_for_date?date=2024-01-19
+    # GET: /api/v1/rides/1/rides_for_date?date=2024-01-19
     def rides_for_date
         rides = Ride.where('DATE(start_time) = ?', params[:date])
         render json: rides, status: :ok
     end
 
 
-    # GET: http://localhost:3000/api/v1/rides/8/rides_for_time_range?start_time=2024-01-18T10:00:00Z&end_time=2024-01-20T18:00:00Z
+    # GET: /api/v1/rides/8/rides_for_time_range?start_time=2024-01-18T10:00:00Z&end_time=2024-01-20T18:00:00Z
     def rides_for_time_range
         rides = Ride.where('start_time >= ? AND end_time <= ?', params[:start_time], params[:end_time])
         render json: rides, status: :ok
     end
 
-    # POST: http://localhost:3000/api/v1/rides/20/complete_ride    
+    # POST: /api/v1/rides/20/complete_ride    
     def complete_ride
         @ride.update(status: :completed)
         render_json_success('Ride completed successfully', ride: @ride)
