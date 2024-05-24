@@ -10,6 +10,8 @@ class Ride < ApplicationRecord
   has_many :driver_ride_ratings
   has_many :user_ratings
 
+  has_one :invoice
+
 
   validates :start_time, presence: true
   validates :end_time, presence: true
