@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_14_182244) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_24_112758) do
   create_table "driver_ride_ratings", force: :cascade do |t|
     t.integer "ride_id", null: false
     t.integer "user_id", null: false
@@ -28,6 +28,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_182244) do
     t.string "driver_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.integer "ride_id", null: false
+    t.integer "user_id", null: false
+    t.integer "driver_id", null: false
+    t.decimal "fare"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["driver_id"], name: "index_invoices_on_driver_id"
+    t.index ["ride_id"], name: "index_invoices_on_ride_id"
+    t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
   create_table "ride_users", force: :cascade do |t|
@@ -91,6 +104,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_182244) do
   end
 
   add_foreign_key "driver_ride_ratings", "drivers"
+  add_foreign_key "invoices", "drivers"
+  add_foreign_key "invoices", "rides"
+  add_foreign_key "invoices", "users"
   add_foreign_key "rides", "drivers"
   add_foreign_key "rides", "users"
   add_foreign_key "rides", "users"
