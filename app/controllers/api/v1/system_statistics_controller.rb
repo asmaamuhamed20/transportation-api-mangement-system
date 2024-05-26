@@ -1,10 +1,12 @@
 class Api::V1::SystemStatisticsController < ApplicationController
   before_action :authorize_admin
 
+  # GET: /api/v1/system_statistics/total_rides_count
   def total_rides_count
     render json: { total_rides: Ride.count }
   end
 
+  # GET: /api/v1/system_statistics/daily_rides_count
   def daily_rides_count
     start_date = Date.parse('2024-01-01')
     end_date = Date.today 
@@ -12,15 +14,18 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_json_success(daily_rides_count: daily_counts)
   end
 
+  # GET: /api/v1/system_statistics/total_drivers_count
   def total_drivers_count
     render_json_success(total_drivers: Driver.count) 
   end
 
+  # GET: /api/v1/system_statistics/highest_rides_users
   def  highest_rides_users
     highest_rides_users = User.joins(:rides).group('users.id').order('COUNT(rides.id) DESC').limit(1)
     render_json_success(highest_rides_users: highest_rides_users)
   end
 
+  # GET: /api/v1/system_statistics/highest_rides_users_by_month/:date
   def highest_rides_users_by_month
     month = params[:month].to_i
     year = params[:year].to_i
@@ -28,11 +33,13 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_highest_rides_by_month(User, highest_rides_users, :highest_rides_users_by_month)
   end
 
+  # GET: /api/v1/system_statistics/highest_rides_drivers
   def highest_rides_drivers
     highest_rides_drivers = Driver.joins(:rides).group('drivers.id').order('COUNT(rides.id) DESC').limit(1)
     render_json_success(highest_rides_drivers: highest_rides_drivers)
   end
 
+  # GET: /api/v1/system_statistics/highest_rides_drivers_by_month/date
   def highest_rides_drivers_by_month
     month = params[:month].to_i
     year = params[:year].to_i
@@ -40,11 +47,13 @@ class Api::V1::SystemStatisticsController < ApplicationController
     render_highest_rides_by_month(highest_rides_drivers, highest_rides_drivers, :highest_rides_drivers_by_month)
   end
 
+  # GET: /api/v1/system_statistics/calculate_usage_percentage
   def calculate_usage_percentage
     usage_percentage_by_vehicle = calculate_usage_percentage_by_vehicle
     render_json_success(usage_percentage_by_vehicle: usage_percentage_by_vehicle)
   end   
 
+  # GET: /api/v1/system_statistics/rides_for_driver?driver_id=
   def rides_for_driver 
     driver_id = params[:driver_id]
     ride_count = Ride.where(driver_id: driver_id).count
