@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_26_144551) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_26_150333) do
   create_table "driver_ride_ratings", force: :cascade do |t|
     t.integer "ride_id", null: false
     t.integer "user_id", null: false
@@ -104,8 +104,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_26_144551) do
   end
 
   add_foreign_key "driver_ride_ratings", "drivers", on_delete: :cascade
+  add_foreign_key "driver_ride_ratings", "rides", on_delete: :cascade
   add_foreign_key "invoices", "drivers", on_delete: :cascade
-  add_foreign_key "invoices", "rides"
+  add_foreign_key "invoices", "rides", on_delete: :cascade
   add_foreign_key "invoices", "users"
   add_foreign_key "ride_users", "users", on_delete: :cascade
   add_foreign_key "rides", "drivers"
