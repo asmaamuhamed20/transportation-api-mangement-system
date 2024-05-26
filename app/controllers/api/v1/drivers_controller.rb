@@ -3,12 +3,12 @@ class Api::V1::DriversController < ApplicationController
     before_action :authorize_admin, only: [:create, :update, :destroy, :rides_for_driver] 
 
 
-   #  GET: http://localhost:3000/api/v1/drivers
+   #  GET: /api/v1/drivers
     def index
         render json: Driver.all
     end
 
-    # POST: http://localhost:3000/api/v1/drivers
+    # POST: /api/v1/drivers
     def create
         @driver = Driver.new(driver_params)
         if @driver.save
@@ -18,7 +18,7 @@ class Api::V1::DriversController < ApplicationController
         end
     end
 
-    # PUT: http://localhost:3000/api/v1/drivers/5
+    # PUT: /api/v1/drivers/5
     def update
         if @driver.update(driver_params)
             render json: @driver, status: :ok
@@ -27,13 +27,13 @@ class Api::V1::DriversController < ApplicationController
         end
     end
 
-    # DELETE: http://localhost:3000/api/v1/drivers/5
+    # DELETE: /api/v1/drivers/5
     def destroy
         @driver.destroy
         head :no_content   
     end
 
-    # GET: http://localhost:3000/api/v1/drivers/2/rides_for_driver    
+    # GET: /api/v1/drivers/2/rides_for_driver    
     def rides_for_driver
         render json: @driver.rides, status: :ok
     end

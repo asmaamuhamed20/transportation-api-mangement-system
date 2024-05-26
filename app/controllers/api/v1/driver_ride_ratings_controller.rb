@@ -2,25 +2,25 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     before_action :set_ride, only: [:create]
     before_action :authorize_admin, only: [:average_rating_for_driver]
   
-    # POST: http://localhost:3000/api/v1/driver_ride_ratings
+    # POST: /api/v1/driver_ride_ratings
     def create
       @rating = @ride.driver_ride_ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
       handle_rating_save_result(@rating)
     end
   
-    # GET: http://localhost:3000/api/v1/driver_ride_ratings/2
+    # GET: /api/v1/driver_ride_ratings/2
     def show
       @rating = DriverRideRating.find(params[:id])
       render_success_json(data: @rating)
     end
   
-    # GET: http://localhost:3000/api/v1/driver_ride_ratings?ride_id=1
+    # GET: /api/v1/driver_ride_ratings?ride_id=1
     def index
       @ratings = DriverRideRating.where(ride_id: params[:ride_id])
       render_success_json(data: @ratings)
     end
   
-    # GET: http://localhost:3000/api/v1/driver_ride_ratings/4/average_rating_for_driver
+    # GET: /api/v1/driver_ride_ratings/4/average_rating_for_driver
     def average_rating_for_driver
       driver_id = params[:id]
       ratings = DriverRideRating.where(driver_id: driver_id)
