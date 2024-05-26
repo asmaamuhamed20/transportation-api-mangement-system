@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_26_174429) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_26_175226) do
   create_table "driver_payments", force: :cascade do |t|
     t.integer "driver_id", null: false
     t.decimal "payment_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "invoice_id", null: false
     t.index ["driver_id"], name: "index_driver_payments_on_driver_id"
+    t.index ["invoice_id"], name: "index_driver_payments_on_invoice_id"
   end
 
   create_table "driver_ride_ratings", force: :cascade do |t|
@@ -112,6 +114,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_26_174429) do
   end
 
   add_foreign_key "driver_payments", "drivers"
+  add_foreign_key "driver_payments", "invoices"
   add_foreign_key "driver_ride_ratings", "drivers", on_delete: :cascade
   add_foreign_key "driver_ride_ratings", "rides", on_delete: :cascade
   add_foreign_key "invoices", "drivers", on_delete: :cascade

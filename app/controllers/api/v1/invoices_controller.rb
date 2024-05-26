@@ -1,6 +1,5 @@
 class Api::V1::InvoicesController < ApplicationController
     before_action :find_user, only: [:user_invoices_history]
-    before_action :find_driver, only: [:driver_invoices_history]
 
     def list_all_invoices
         render json: Invoice.all 
@@ -15,24 +14,12 @@ class Api::V1::InvoicesController < ApplicationController
         end 
     end
 
-    def driver_invoices_history
-        if @driver
-            @invoices = @driver.invoices
-            render_invoices(@invoices)        
-        else
-            render_error(:not_found, "Driver with ID #{params[:driver_id]} not found")
-        end    
-    end
 
 
     private
 
     def find_user
         @user = User.find(params[:user_id])
-    end
-
-    def find_driver
-        @driver = Driver.find(params[:driver_id])
     end
 
     def render_error(status, messages)

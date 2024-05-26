@@ -77,7 +77,13 @@ Rails.application.routes.draw do
         collection do
           get 'list_all_invoices'
           get 'user_invoices_history/:user_id', to: 'invoices#user_invoices_history'
-          get 'driver_invoices_history/:driver_id', to: 'invoices#driver_invoices_history'
+        end
+      end
+
+      # Driver Peyment
+      resources :driver_payments, only: [:create] do
+        collection do
+          get 'driver_payments_history/:driver_id', to: 'driver_payments#driver_payments_history'
         end
       end
 
