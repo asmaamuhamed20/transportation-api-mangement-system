@@ -1,10 +1,12 @@
 class Api::V1::InvoicesController < ApplicationController
     before_action :find_user, only: [:user_invoices_history]
 
+    # GET: /api/v1/invoices/list_all_invoices
     def list_all_invoices
         render json: Invoice.all 
     end
 
+    # GET: /api/v1/invoices/user_invoices_history/:user_id
     def user_invoices_history
         if @user
             @invoices = @user.invoices
@@ -13,8 +15,6 @@ class Api::V1::InvoicesController < ApplicationController
             render_error(:not_found, "User with ID #{params[:user_id]} not found")
         end 
     end
-
-
 
     private
 
