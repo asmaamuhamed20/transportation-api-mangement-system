@@ -3,8 +3,8 @@ class Api::V1::RidesController < ApplicationController
     before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
     before_action :find_user, only: [:rides_for_user]
     before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_user, :rides_for_time_range, :complete_ride]
-    load_and_authorize_resource
 
+    
     def index  
        render json: Ride.all 
     end
@@ -12,10 +12,14 @@ class Api::V1::RidesController < ApplicationController
     # POST: /api/v1/rides
     def create
         ride = Ride.new(ride_params)
-        users = find_user(params[:user_id])
+        user = User.find_by(id: params[:user_id])
 
-        if ride_valid?(ride, users)
-            save_ride(ride, users)
+        if ride_valid?(ride)
+            if ride.save
+              render json: ride_with_invoice(ride), status: :created
+            else
+              render_error(:unprocessable_entity, ride.errors.full_messages)
+            end
         else
             render_vehicle_unavailable_error
         end
@@ -84,16 +88,23 @@ class Api::V1::RidesController < ApplicationController
         params.require(:ride).permit(:user_id, :driver_id, :vehicle_id, :pickup_stop, :drop_off_stop, :start_time, :end_time)
     end
 
-    def ride_valid?(ride, users)
-        vehicle_available?(ride) && ride.users << users
+    def ride_valid?(ride)
+        vehicle_available?(ride)
     end
 
-    def save_ride(ride, users)
-        if ride.save
-          render json: ride, status: :created
-        else
-          render_error(:unprocessable_entity, ride.errors.full_messages)
-        end
+    # def save_ride(ride)
+    #     if ride.save
+    #       render json: ride, status: :created
+    #     else
+    #       render_error(:unprocessable_entity, ride.errors.full_messages)
+    #     end
+    # end
+
+    def ride_with_invoice(ride)
+        {
+          ride: ride,
+          invoice: ride.invoice
+        }
     end
 
     def vehicle_available?(ride)
@@ -125,8 +136,10 @@ class Api::V1::RidesController < ApplicationController
     end
     
     def find_user(user_id)
-        User.where(id: params[:user_id]) || render_error(:not_found, 'User not found')
-    end
+        user = User.find_by(id: user_id)
+        render_error(:not_found, 'User not found') unless user
+        user
+      end
 
     def process_vehicle_swap(swap_vehicle)
         if vehicle_available?(@ride) && @ride.update(vehicle: swap_vehicle)

@@ -12,6 +12,8 @@ class Ride < ApplicationRecord
 
   has_one :invoice
 
+  after_create :generate_invoice
+
 
   validates :start_time, presence: true
   validates :end_time, presence: true
@@ -42,5 +44,28 @@ class Ride < ApplicationRecord
 
   def can_be_rated_by?(user)
     user_id == user&.id
+  end
+
+  private
+
+  def generate_invoice
+    invoice = build_invoice
+    unless invoice.save
+      logger.error "Failed to generate invoice: #{invoice.errors.full_messages}"
+    end
+  end
+  
+  def build_invoice
+    Invoice.new(
+      ride_id: self.id,
+      user_id: self.user_id,
+      driver_id: self.driver_id,
+      fare: calculate_fare
+    )
+  end
+  
+  def calculate_fare
+    duration_in_hours = (self.end_time - self.start_time) / 3600.0
+    fare = duration_in_hours * HOURLY_RATE
   end
 end
