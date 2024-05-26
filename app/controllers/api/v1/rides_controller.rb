@@ -22,6 +22,7 @@ class Api::V1::RidesController < ApplicationController
         end
     end
 
+    # DELETE: /api/v1/rides
     def destroy
         if @ride.destroy
             render_json_success('Ride deleted successfully')

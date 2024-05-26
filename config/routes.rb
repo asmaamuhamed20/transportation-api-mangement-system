@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
   namespace :api do
     namespace :v1 do
+      
       # System Statistics
       resources :system_statistics, only: [] do
         collection do
@@ -70,6 +71,17 @@ Rails.application.routes.draw do
           post 'complete_ride'
         end
       end
+
+      # Invoices
+      resources :invoices, only: [] do
+        collection do
+          get 'list_all_invoices'
+          get 'user_invoices_history/:user_id', to: 'invoices#user_invoices_history'
+          get 'driver_invoices_history/:driver_id', to: 'invoices#driver_invoices_history'
+        end
+      end
+
+
     end
   end
    # Health Check
