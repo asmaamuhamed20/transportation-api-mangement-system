@@ -2,6 +2,7 @@ class Api::V1::VehiclesController < ApplicationController
   before_action :set_vehicle, only: [:show, :update, :destroy]
   before_action :authorize_admin,  only: [:create, :update, :destroy]
 
+  # GET: /api/v1/vehicles
   def index
     render json: Vehicle.all
   end
@@ -14,15 +15,18 @@ class Api::V1::VehiclesController < ApplicationController
     @vehicle = Vehicle.new
   end
 
+  # POST: /api/v1/vehicles
   def create
     @vehicle = Vehicle.new(vehicle_params)
     handle_save(@vehicle)
   end
 
+  # PUT: /api/v1/vehicles/:vehicle_id
   def update
     handle_update(@vehicle, vehicle_params)
   end
 
+  # DELETE: /api/v1/vehicles/:vehicle_id
   def destroy
     handle_destroy(@vehicle)
   end
