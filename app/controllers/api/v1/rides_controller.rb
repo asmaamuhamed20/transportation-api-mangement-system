@@ -1,12 +1,13 @@
 class Api::V1::RidesController < ApplicationController
     before_action :validate_vehicle_availability, only: [:create]
-    before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user]
+    before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :destroy]
     before_action :find_user, only: [:rides_for_user]
     before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_user, :rides_for_time_range, :complete_ride]
 
     
-    def index  
-       render json: Ride.all 
+    def index
+        @rides_with_invoices = Ride.includes(:invoice)
+        render json: @rides_with_invoices, include: :invoice
     end
 
     # POST: /api/v1/rides
@@ -15,14 +16,18 @@ class Api::V1::RidesController < ApplicationController
         user = User.find_by(id: params[:user_id])
 
         if ride_valid?(ride)
-            if ride.save
-              render json: ride_with_invoice(ride), status: :created
-            else
-              render_error(:unprocessable_entity, ride.errors.full_messages)
-            end
+            save_ride(ride)
         else
             render_vehicle_unavailable_error
         end
+    end
+
+    def destroy
+        if @ride.destroy
+            render_json_success('Ride deleted successfully')
+        else
+            render_error(:unprocessable_entity, 'Failed to delete ride')
+        end   
     end
     
     # PATCH: /api/v1/rides/20/swap_vehicle
@@ -92,13 +97,13 @@ class Api::V1::RidesController < ApplicationController
         vehicle_available?(ride)
     end
 
-    # def save_ride(ride)
-    #     if ride.save
-    #       render json: ride, status: :created
-    #     else
-    #       render_error(:unprocessable_entity, ride.errors.full_messages)
-    #     end
-    # end
+    def save_ride(ride)
+        if ride.save
+            render json: ride_with_invoice(ride), status: :created
+        else
+            render_error(:unprocessable_entity, ride.errors.full_messages)
+        end
+    end
 
     def ride_with_invoice(ride)
         {
