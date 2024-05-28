@@ -1,6 +1,6 @@
 class Api::V1::RidesController < ApplicationController
     before_action :validate_vehicle_availability, only: [:create]
-    before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :destroy]
+    before_action :find_ride, only: [:swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :destroy, :complete_ride]
     before_action :find_user, only: [:rides_for_user]
     before_action :authorize_admin, only: [:create, :swap_vehicle, :add_user_to_ride, :remove_user, :replace_user, :rides_for_date, :rides_for_user, :rides_for_time_range, :complete_ride]
 
