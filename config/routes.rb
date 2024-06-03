@@ -88,6 +88,9 @@ Rails.application.routes.draw do
       end
 
 
+      # Coupons 
+      resources :coupons, only: [:index, :show, :create, :update, :destroy]
+      
     end
   end
    # Health Check

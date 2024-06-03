@@ -1,14 +1,17 @@
 class Api::V1::CouponsController < ApplicationController
     before_action :set_coupon, only: [:show, :update, :destroy]
 
+    # GET /api/v1/coupons
     def index
         render json: Coupon.all
     end
 
+    # GET /api/v1/coupons/:id
     def show
         render json: @coupon
     end
 
+    # POST /api/v1/coupons
     def create
         @coupon = Coupon.new(coupon_params)
 
@@ -19,6 +22,7 @@ class Api::V1::CouponsController < ApplicationController
         end
     end
 
+    # PUT /api/v1/coupons/1
     def update
         if @coupon.update(coupon_params)
             render_json_success(@coupon)
@@ -27,6 +31,7 @@ class Api::V1::CouponsController < ApplicationController
         end
     end
 
+    # DELETE /api/v1/coupons/1
     def destroy
         if @coupon.destroy
             render_json_success('Coupon deleted successfully')
