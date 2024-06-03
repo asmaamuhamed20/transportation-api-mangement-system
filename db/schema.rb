@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_03_174650) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_03_210213) do
   create_table "coupons", force: :cascade do |t|
     t.string "code"
     t.decimal "discount_amount"
@@ -83,6 +83,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_03_174650) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
+    t.decimal "distance"
     t.index ["driver_id"], name: "index_rides_on_driver_id"
     t.index ["user_id"], name: "index_rides_on_user_id"
     t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
