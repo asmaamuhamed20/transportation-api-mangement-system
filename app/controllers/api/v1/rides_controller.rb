@@ -7,7 +7,7 @@ class Api::V1::RidesController < ApplicationController
     
     def index
         @rides_with_invoices = Ride.includes(:invoice)
-        render json: @rides_with_invoices, include: :invoice
+        render json: @rides_with_invoices, include: :invoice, methods: :distance
     end
 
     # POST: /api/v1/rides
@@ -61,20 +61,20 @@ class Api::V1::RidesController < ApplicationController
       
     def rides_for_user
         rides = Ride.where(user_id: @user.id)
-        render json: rides, status: :ok
+        render json: rides, status: :ok, methods: :distance
     end
 
     # GET: /api/v1/rides/1/rides_for_date?date=2024-01-19
     def rides_for_date
         rides = Ride.where('DATE(start_time) = ?', params[:date])
-        render json: rides, status: :ok
+        render json: rides, status: :ok, methods: :distance
     end
 
 
     # GET: /api/v1/rides/8/rides_for_time_range?start_time=2024-01-18T10:00:00Z&end_time=2024-01-20T18:00:00Z
     def rides_for_time_range
         rides = Ride.where('start_time >= ? AND end_time <= ?', params[:start_time], params[:end_time])
-        render json: rides, status: :ok
+        render json: rides, status: :ok, methods: :distance
     end
 
     # POST: /api/v1/rides/20/complete_ride    
@@ -82,6 +82,20 @@ class Api::V1::RidesController < ApplicationController
         @ride.update(status: :completed)
         render_json_success('Ride completed successfully', ride: @ride)
     end
+
+    def apply_coupon
+        if @coupon.nil?
+          render_json_error("Coupon not found")
+          return
+        end
+    
+        if @ride.apply_coupon(@coupon.code)
+          render_json_success(@ride)
+        else
+          render_json_error("Coupon cannot be applied")
+        end
+    end
+    
       
                 
     private
@@ -100,17 +114,14 @@ class Api::V1::RidesController < ApplicationController
 
     def save_ride(ride)
         if ride.save
-            render json: ride_with_invoice(ride), status: :created
+            render_ride_with_invoice(ride)
         else
             render_error(:unprocessable_entity, ride.errors.full_messages)
         end
     end
 
-    def ride_with_invoice(ride)
-        {
-          ride: ride,
-          invoice: ride.invoice
-        }
+    def render_ride_with_invoice(ride)
+        render json: { ride: ride, invoice: ride.invoice, distance: ride.distance }, status: :created
     end
 
     def vehicle_available?(ride)
@@ -171,7 +182,6 @@ class Api::V1::RidesController < ApplicationController
           render_error(:unprocessable_entity, { error: 'Failed to remove user from the ride', errors: ride.errors.full_messages })
         end
     end
-      
       
     def render_error(status, messages)
         render json: { error: messages }, status: status

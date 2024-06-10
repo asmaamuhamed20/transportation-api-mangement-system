@@ -1,6 +1,7 @@
 class Ride < ApplicationRecord
-  attribute :status, :integer, default: 0
-
+  include Geocoding
+  
+  # Associations
   belongs_to :user
   belongs_to :driver
   belongs_to :vehicle
@@ -12,14 +13,34 @@ class Ride < ApplicationRecord
 
   has_one :invoice
 
+  # Callbacks
   after_create :generate_invoice
+  after_validation :calculate_distance, if: -> { pickup_stop.present? && drop_off_stop.present? }
 
 
-  validates :start_time, presence: true
-  validates :end_time, presence: true
+  # Validations
   validates :user, :driver, :vehicle, presence: true
+  validates :pickup_stop, :drop_off_stop, presence: true
+  validates :start_time, :end_time, presence: true
+  validates :status, presence: true
 
+  # Enum for status
   enum status: { active: 0, completed: 1 }
+
+  before_save :calculate_distance
+
+
+  # Methods
+
+  def apply_coupon(coupon_code)
+    coupon = Coupon.find_by(code: coupon_code)
+    return unless coupon
+
+    self.discount_amount = coupon.discount_amount
+    self.total_fare -= coupon.discount_amount
+    self.coupon_applied = true
+    self.save
+  end
 
   def add_user(user)
     users << user unless users.include?(user)
@@ -67,5 +88,6 @@ class Ride < ApplicationRecord
   def calculate_fare
     duration_in_hours = (self.end_time - self.start_time) / 3600.0
     fare = duration_in_hours * HOURLY_RATE
+    fare.round(2)
   end
 end
