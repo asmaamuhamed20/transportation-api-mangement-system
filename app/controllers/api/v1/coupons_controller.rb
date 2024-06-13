@@ -1,5 +1,7 @@
 class Api::V1::CouponsController < ApplicationController
     before_action :set_coupon, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
+
 
     # GET /api/v1/coupons
     def index
@@ -40,6 +42,20 @@ class Api::V1::CouponsController < ApplicationController
         end  
     end
 
+  # POST /api/v1/coupons/apply
+    def apply
+        coupon_service = CouponService.new(params, @current_user)
+        result = coupon_service.apply_coupon
+    
+        if result[:success]
+            invoice = result[:data][:invoice]
+            render_json_success({ message: "Coupon applied successfully", invoice: invoice }, :ok)
+        else
+            render_json_error(result[:error][:apply_error], :unprocessable_entity)
+        end
+    end
+      
+
     private 
 
 
@@ -48,7 +64,7 @@ class Api::V1::CouponsController < ApplicationController
     end
 
     def coupon_params
-        params.require(:coupon).permit(:code, :discount_amount, :expiry_date, :usage_limit, :usage_count)
+        params.require(:coupon).permit(:code, :discount_amount, :expiry_date, :usage_limit, :usage_count, :distance_threshold)
     end
 
     def render_json_success(data, status = :ok)

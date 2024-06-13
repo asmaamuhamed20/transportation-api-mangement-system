@@ -82,21 +82,6 @@ class Api::V1::RidesController < ApplicationController
         @ride.update(status: :completed)
         render_json_success('Ride completed successfully', ride: @ride)
     end
-
-    def apply_coupon
-        if @coupon.nil?
-          render_json_error("Coupon not found")
-          return
-        end
-    
-        if @ride.apply_coupon(@coupon.code)
-          render_json_success(@ride)
-        else
-          render_json_error("Coupon cannot be applied")
-        end
-    end
-    
-      
                 
     private
     
@@ -114,14 +99,17 @@ class Api::V1::RidesController < ApplicationController
 
     def save_ride(ride)
         if ride.save
-            render_ride_with_invoice(ride)
+            render_created_ride_response(ride)
         else
             render_error(:unprocessable_entity, ride.errors.full_messages)
         end
     end
 
-    def render_ride_with_invoice(ride)
-        render json: { ride: ride, invoice: ride.invoice, distance: ride.distance }, status: :created
+    def render_created_ride_response(ride)
+        render json: {
+          ride: ride.as_json(except: :coupon_id),
+          invoice: ride.invoice.as_json(except: :discount)
+        }
     end
 
     def vehicle_available?(ride)
@@ -138,8 +126,7 @@ class Api::V1::RidesController < ApplicationController
     def render_vehicle_unavailable_error
         render_error(:unprocessable_entity, 'Selected vehicle is not available during this time')
     end
-
-      
+   
     def find_ride
         @ride = Ride.find(params[:id])
     end
@@ -155,8 +142,7 @@ class Api::V1::RidesController < ApplicationController
     def find_user(user_id)
         user = User.find_by(id: user_id)
         render_error(:not_found, 'User not found') unless user
-        user
-      end
+    end
 
     def process_vehicle_swap(swap_vehicle)
         if vehicle_available?(@ride) && @ride.update(vehicle: swap_vehicle)

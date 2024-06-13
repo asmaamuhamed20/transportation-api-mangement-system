@@ -69,6 +69,7 @@ Rails.application.routes.draw do
           get 'rides_for_date'
           get 'rides_for_time_range'
           post 'complete_ride'
+        #  post 'apply_coupon'
         end
       end
 
@@ -89,7 +90,9 @@ Rails.application.routes.draw do
 
 
       # Coupons 
-      resources :coupons, only: [:index, :show, :create, :update, :destroy]
+      resources :coupons, only: [:index, :show, :create, :update, :destroy] do
+        post 'apply/:ride_id', to: 'coupons#apply', on: :collection
+      end
       
     end
   end

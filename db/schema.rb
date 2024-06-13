@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_13_110117) do
   create_table "coupons", force: :cascade do |t|
     t.string "code"
     t.decimal "discount_amount"
@@ -19,6 +19,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
     t.integer "usage_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "distance_threshold"
+    t.integer "ride_id"
+    t.boolean "applied"
+    t.index ["ride_id"], name: "index_coupons_on_ride_id"
   end
 
   create_table "driver_payments", force: :cascade do |t|
@@ -58,6 +62,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
     t.string "status", default: "Pending"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "discount"
     t.index ["driver_id"], name: "index_invoices_on_driver_id"
     t.index ["ride_id"], name: "index_invoices_on_ride_id"
     t.index ["user_id"], name: "index_invoices_on_user_id"
@@ -84,6 +89,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.decimal "distance"
+    t.integer "coupon_id"
+    t.index ["coupon_id"], name: "index_rides_on_coupon_id"
     t.index ["driver_id"], name: "index_rides_on_driver_id"
     t.index ["user_id"], name: "index_rides_on_user_id"
     t.index ["vehicle_id"], name: "index_rides_on_vehicle_id"
@@ -124,6 +131,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
     t.index ["driver_id"], name: "index_vehicles_on_driver_id"
   end
 
+  add_foreign_key "coupons", "rides"
   add_foreign_key "driver_payments", "drivers"
   add_foreign_key "driver_payments", "invoices"
   add_foreign_key "driver_ride_ratings", "drivers", on_delete: :cascade
@@ -132,6 +140,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_10_132648) do
   add_foreign_key "invoices", "rides", on_delete: :cascade
   add_foreign_key "invoices", "users"
   add_foreign_key "ride_users", "users", on_delete: :cascade
+  add_foreign_key "rides", "coupons"
   add_foreign_key "rides", "drivers"
   add_foreign_key "rides", "users"
   add_foreign_key "rides", "users"

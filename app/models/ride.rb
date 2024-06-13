@@ -5,13 +5,14 @@ class Ride < ApplicationRecord
   belongs_to :user
   belongs_to :driver
   belongs_to :vehicle
+  belongs_to :coupon, optional: true
 
   has_many :ride_users
   has_many :users, through: :ride_users, source: :user
   has_many :driver_ride_ratings
   has_many :user_ratings
 
-  has_one :invoice
+  has_one :invoice, dependent: :destroy
 
   # Callbacks
   after_create :generate_invoice
@@ -23,6 +24,7 @@ class Ride < ApplicationRecord
   validates :pickup_stop, :drop_off_stop, presence: true
   validates :start_time, :end_time, presence: true
   validates :status, presence: true
+  validate :end_time_must_be_greater_than_start_time
 
   # Enum for status
   enum status: { active: 0, completed: 1 }
@@ -31,16 +33,6 @@ class Ride < ApplicationRecord
 
 
   # Methods
-
-  def apply_coupon(coupon_code)
-    coupon = Coupon.find_by(code: coupon_code)
-    return unless coupon
-
-    self.discount_amount = coupon.discount_amount
-    self.total_fare -= coupon.discount_amount
-    self.coupon_applied = true
-    self.save
-  end
 
   def add_user(user)
     users << user unless users.include?(user)
@@ -67,15 +59,6 @@ class Ride < ApplicationRecord
     user_id == user&.id
   end
 
-  private
-
-  def generate_invoice
-    invoice = build_invoice
-    unless invoice.save
-      logger.error "Failed to generate invoice: #{invoice.errors.full_messages}"
-    end
-  end
-  
   def build_invoice
     Invoice.new(
       ride_id: self.id,
@@ -84,9 +67,24 @@ class Ride < ApplicationRecord
       fare: calculate_fare
     )
   end
-  
+
+  def generate_invoice
+    invoice = build_invoice
+    unless invoice.save
+      logger.error "Failed to generate invoice: #{invoice.errors.full_messages}"
+    end
+  end
+
+  private
+
+  def end_time_must_be_greater_than_start_time
+    errors.add(:end_time, "must be greater than start time") if end_time <= start_time
+  end
+
   def calculate_fare
-    duration_in_hours = (self.end_time - self.start_time) / 3600.0
+    return nil if end_time <= start_time
+
+    duration_in_hours = (end_time - start_time) / 3600.0
     fare = duration_in_hours * HOURLY_RATE
     fare.round(2)
   end
