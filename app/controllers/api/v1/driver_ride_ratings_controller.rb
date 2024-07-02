@@ -4,27 +4,32 @@ class Api::V1::DriverRideRatingsController < ApplicationController
   
     # POST: /api/v1/driver_ride_ratings
     def create
-      @rating = @ride.driver_ride_ratings.build(rating_params.merge(user: @ride.user, driver: @ride.driver))
-      handle_rating_save_result(@rating)
+      rating = DriverRideRating.create_rating(@ride, rating_params)
+      handle_rating_save_result(rating)
     end
   
     # GET: /api/v1/driver_ride_ratings/2
     def show
-      @rating = DriverRideRating.find(params[:id])
-      render_success_json(data: @rating)
+      rating = DriverRideRating.find(params[:id])
+      render_success_json(data: rating)
     end
   
     # GET: /api/v1/driver_ride_ratings?ride_id=1
     def index
-      @ratings = DriverRideRating.where(ride_id: params[:ride_id])
-      render_success_json(data: @ratings)
+      ratings = DriverRideRating.ratings_for_ride(params[:ride_id])
+      render_success_json(data: ratings)
     end
   
     # GET: /api/v1/driver_ride_ratings/4/average_rating_for_driver
     def average_rating_for_driver
       driver_id = params[:id]
-      ratings = DriverRideRating.where(driver_id: driver_id)
-      calculate_and_render_average_rating(driver_id, ratings)
+      average_rating = DriverRideRating.average_rating_for_driver(driver_id)
+
+      if average_rating
+        render_success_json(data: { driver_id: driver_id, average_rating: average_rating })
+      else
+        render_error(:not_found, 'No ratings available for the driver')
+      end
     end
   
     private
@@ -38,26 +43,15 @@ class Api::V1::DriverRideRatingsController < ApplicationController
     end
     
     def  handle_rating_save_result(result)
-      if result.save
+      if result.persisted?
         render_success_json(data: result, status: :created)
       else
         render_error(:unprocessable_entity, result.errors.full_messages)
-      end   
+      end 
     end
   
     def rating_params
       params.require(:rating).permit(:rating_value, :comment)
-    end
-
-    def calculate_and_render_average_rating(driver_id, ratings)
-      if ratings.present?
-        total_ratings = ratings.count 
-        sum_of_ratings = ratings.sum(:rating_value)
-        average_rating = sum_of_ratings.to_f / total_ratings
-        render_success_json(data: { driver_id: driver_id, average_rating: average_rating })
-      else
-        render_error(:not_found, 'No ratings available for the driver')
-      end
     end
   
     def render_error(status, message)

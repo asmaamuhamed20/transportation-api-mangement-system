@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_02_180913) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_02_182225) do
   create_table "coupons", force: :cascade do |t|
     t.string "code"
     t.decimal "discount_amount"
@@ -37,15 +37,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_02_180913) do
 
   create_table "driver_ride_ratings", force: :cascade do |t|
     t.integer "ride_id", null: false
-    t.integer "user_id", null: false
-    t.integer "driver_id", null: false
     t.integer "rating_value"
     t.text "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["driver_id"], name: "index_driver_ride_ratings_on_driver_id"
     t.index ["ride_id"], name: "index_driver_ride_ratings_on_ride_id"
-    t.index ["user_id"], name: "index_driver_ride_ratings_on_user_id"
   end
 
   create_table "drivers", force: :cascade do |t|
@@ -130,7 +126,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_02_180913) do
   add_foreign_key "coupons", "rides"
   add_foreign_key "driver_payments", "drivers"
   add_foreign_key "driver_payments", "invoices"
-  add_foreign_key "driver_ride_ratings", "drivers", on_delete: :cascade
   add_foreign_key "driver_ride_ratings", "rides", on_delete: :cascade
   add_foreign_key "invoices", "rides", on_delete: :cascade
   add_foreign_key "ride_users", "users", on_delete: :cascade
