@@ -17,18 +17,20 @@ class Api::V1::VehiclesController < ApplicationController
 
   # POST: /api/v1/vehicles
   def create
-    @vehicle = Vehicle.new(vehicle_params)
-    handle_save(@vehicle)
+    @vehicle = Vehicle.create_vehicle(vehicle_params)
+    handle_vehicle_response(@vehicle)
   end
 
   # PUT: /api/v1/vehicles/:vehicle_id
   def update
-    handle_update(@vehicle, vehicle_params)
+    @vehicle.update_vehicle(vehicle_params)
+    handle_vehicle_response(@vehicle)
   end
 
   # DELETE: /api/v1/vehicles/:vehicle_id
   def destroy
-    handle_destroy(@vehicle)
+    Vehicle.destroy_vehicle(@vehicle)
+    render_json_success(message: 'Vehicle removed successfully')
   end
 
   private
@@ -38,36 +40,20 @@ class Api::V1::VehiclesController < ApplicationController
     @vehicle = Vehicle.find(params[:id])
   end
 
-  def handle_save(vehicle)
-    if vehicle.save
-      render_json_success(vehicle, :created)
-    else
-      render_json_error(vehicle.errors.full_messages.join(', '))
-    end
-  end
-
-  def handle_update(vehicle, vehicle_params)
-    if vehicle.update(vehicle_params)
-      render_json_success(vehicle)
-    else
-      render_json_error(vehicle.errors.full_messages.join(', '))
-    end
-  end
-
-  def handle_destroy(vehicle)
-    if vehicle.destroy
-      render_json_success(message: 'Vehicle removed successfully')
-    else
-      render_json_error(vehicle.errors.full_messages.join(', '))
-    end
-  end
-
   def authorize_admin
     render_json_error('Not authorized', :unauthorized) unless current_user.admin?
   end
 
   def vehicle_params
     params.require(:vehicle).permit(:model, :registration_number, :driver_id, :available_time)
+  end
+
+  def handle_vehicle_response(vehicle)
+    if vehicle.valid?
+      render_json_success(vehicle)
+    else
+      render_json_error(vehicle.errors.full_messages.join(', '), :unprocessable_entity)
+    end
   end
 
   def render_json_success(data, status = :ok)

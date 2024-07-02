@@ -2,10 +2,10 @@ class Vehicle < ApplicationRecord
   belongs_to :driver
   has_many :rides
 
-  # check if ther is an overlapping rides
+  validates :model, :registration_number, presence: true
+
   def available?(start_time, end_time)
     overlapping_rides = rides.where('(start_time >= ? AND start_time <= ?) OR (end_time >= ? AND end_time <= ?)', start_time, end_time, start_time, end_time)
-    puts overlapping_rides.inspect  
     overlapping_rides.empty?
   end
 
@@ -20,8 +20,20 @@ class Vehicle < ApplicationRecord
         available_time_slots << (start_time..end_time)
       end
     end
-
     available_time_slots
   end
 
+  def self.create_vehicle(params)
+    vehicle = Vehicle.new(params)
+    vehicle.save
+  end
+
+  def update_vehicle(params)
+    update(params)
+    self
+  end
+
+  def self.destroy_vehicle(vehicle)
+    vehicle.destroy
+  end
 end
