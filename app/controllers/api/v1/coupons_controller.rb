@@ -49,9 +49,9 @@ class Api::V1::CouponsController < ApplicationController
     
         if result[:success]
             invoice = result[:data][:invoice]
-            render_json_success({ message: "Coupon applied successfully", invoice: invoice }, :ok)
+            render_json_success({ message: result[:data][:message], invoice: result[:data][:invoice] }, :ok)
         else
-            render_json_error(result[:error][:apply_error], :unprocessable_entity)
+            render_json_error(result[:error].values.first, :unprocessable_entity)
         end
     end
       

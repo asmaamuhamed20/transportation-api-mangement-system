@@ -17,25 +17,20 @@ class CouponService
     ride = Ride.find_by(id: @params[:ride_id])
     coupon = Coupon.find_by(code: @params[:coupon_code])
 
-    error_key = determine_error_key(ride, coupon)
-    return error_response(error_key) if error_key
+ 
+    return error_response(:not_found) unless ride && coupon
+    return error_response(:already_applied) if ride.coupon.present?
+    return error_response(:expired) if coupon.expired?
+    return error_response(:usage_limit_reached) if coupon.usage_limit_reached?
+    return error_response(:unauthorized) unless authorized?(ride)
 
-    if coupon.apply_to_ride(ride)
-      { success: true, data: { message: 'Coupon applied successfully', invoice: ride.invoice } }
-    else
-      error_response(:apply_error)
-    end
+    result = coupon.apply_to_ride(ride)
+    return error_response(:apply_error) unless result[:success]
+
+    { success: true, data: { message: result[:message], invoice: result[:invoice] } }
   end
 
   private
-
-  def determine_error_key(ride, coupon)
-    return :not_found unless ride && coupon
-    return :already_applied if ride.coupon.present?
-    return :expired if coupon.expired?
-    return :usage_limit_reached if coupon.usage_limit_reached?
-    return :unauthorized unless authorized?(ride)
-  end
 
   def authorized?(ride)
     ride.user == @current_user

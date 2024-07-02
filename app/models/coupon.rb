@@ -9,8 +9,10 @@ class Coupon < ApplicationRecord
     validates :applied, inclusion: { in: [true, false] }
   
     def apply_to_ride(ride)
-        return false unless valid_for_ride?(ride)
-        return false if ride.coupon.present?
+        return { success: false, error: "Coupon already applied to this ride" } if ride.coupon.present?
+        return { success: false, error: "Coupon is expired" } if expired?
+        return { success: false, error: "Coupon usage limit reached" } if usage_limit_reached?
+        return { success: false, error: "Coupon not valid for this ride" } unless valid_for_ride?(ride)
     
         transaction do
           ride.update!(coupon: self)
@@ -18,6 +20,9 @@ class Coupon < ApplicationRecord
           update!(applied: true) 
           update_invoice(ride)
         end
+        { success: true, message: "Coupon applied successfully", invoice: ride.invoice }
+    rescue => e
+      { success: false, error: e.message }
     end
     
     def expired?
