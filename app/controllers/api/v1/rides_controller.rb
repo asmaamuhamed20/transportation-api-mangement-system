@@ -12,13 +12,15 @@ class Api::V1::RidesController < ApplicationController
 
     # POST: /api/v1/rides
     def create
-        ride = Ride.new(ride_params)
-        user = User.find_by(id: params[:user_id])
+        result = Ride.save_ride(ride_params)
 
-        if ride_valid?(ride)
-            save_ride(ride)
+        if result[:status] == :created
+            render json: {
+              ride: result[:ride].as_json(except: :coupon_id),
+              invoice: result[:invoice].as_json(except: :discount)
+            }, status: result[:status]
         else
-            render_vehicle_unavailable_error
+            render json: { error: result[:message] || result[:errors] }, status: result[:status]
         end
     end
 
@@ -33,9 +35,12 @@ class Api::V1::RidesController < ApplicationController
     
     # PATCH: /api/v1/rides/20/swap_vehicle
     def swap_vehicle
-        swap_vehicle = find_vehicle(params[:new_vehicle_id])
-        return head :not_found unless swap_vehicle
-        process_vehicle_swap(swap_vehicle)
+        result = @ride.swap_vehicle(params[:new_vehicle_id])
+        if result[:status] == :ok
+          render_json_success(result[:message], ride: result[:ride])
+        else
+          render_error(result[:status], result[:message])
+        end
     end
 
     # POST: /api/v1/rides/20/add_user
@@ -79,8 +84,8 @@ class Api::V1::RidesController < ApplicationController
 
     # POST: /api/v1/rides/20/complete_ride    
     def complete_ride
-        @ride.update(status: :completed)
-        render_json_success('Ride completed successfully', ride: @ride)
+        result = @ride.complete
+        render json: result, status: result[:status]
     end
                 
     private
@@ -92,33 +97,8 @@ class Api::V1::RidesController < ApplicationController
     def ride_params
         params.require(:ride).permit(:user_id, :driver_id, :vehicle_id, :pickup_stop, :drop_off_stop, :start_time, :end_time)
     end
-
-    def ride_valid?(ride)
-        vehicle_available?(ride)
-    end
-
-    def save_ride(ride)
-        if ride.save
-            render_created_ride_response(ride)
-        else
-            render_error(:unprocessable_entity, ride.errors.full_messages)
-        end
-    end
-
-    def render_created_ride_response(ride)
-        render json: {
-          ride: ride.as_json(except: :coupon_id),
-          invoice: ride.invoice.as_json(except: :discount)
-        }
-    end
-
-    def vehicle_available?(ride)
-        vehicle = Vehicle.find(ride.vehicle_id)
-        vehicle.available?(ride.start_time, ride.end_time)
-    end
     
     def validate_vehicle_availability
-        vehicle = Vehicle.find(params[:ride][:vehicle_id])
         ride = Ride.new(ride_params)   
         render_vehicle_unavailable_error unless vehicle_available?(ride)
     end
@@ -131,26 +111,10 @@ class Api::V1::RidesController < ApplicationController
         @ride = Ride.find(params[:id])
     end
     
-    def find_vehicle(vehicle_id)
-        Vehicle.find_by(id: vehicle_id) || head(:not_found)
-    end
-
-    def find_driver
-        @driver = Driver.find_by(id: params[:driver_id]) || render_error(:not_found, 'Driver not found')
-    end
     
     def find_user(user_id)
         user = User.find_by(id: user_id)
         render_error(:not_found, 'User not found') unless user
-    end
-
-    def process_vehicle_swap(swap_vehicle)
-        if vehicle_available?(@ride) && @ride.update(vehicle: swap_vehicle)
-            render_json_success('Vehicle swapped successfully', ride: @ride)
-        else
-            error_message = vehicle_available?(@ride) ? @ride.errors.full_messages : 'Selected vehicle is not available during this time'
-            render_error(:unprocessable_entity, error_message)
-        end
     end
 
     def process_add_user(user)

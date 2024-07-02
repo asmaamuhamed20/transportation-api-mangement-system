@@ -75,6 +75,40 @@ class Ride < ApplicationRecord
     end
   end
 
+  def vehicle_available?(ride)
+    vehicle.available?(ride.start_time, ride.end_time)
+  end
+
+  def swap_vehicle(new_vehicle_id)
+    swap_vehicle = Vehicle.find_by(id: new_vehicle_id)
+    return { status: :not_found } unless swap_vehicle
+    if vehicle_available?(self) && update(vehicle: swap_vehicle)
+      { status: :ok, message: 'Vehicle swapped successfully', ride: self }
+    else
+      error_message = vehicle_available?(self) ? errors.full_messages : 'Selected vehicle is not available during this time'
+      { status: :unprocessable_entity, message: error_message }
+    end
+  end
+
+  def complete
+    update(status: :completed)
+    { status: :ok, message: 'Ride completed successfully', ride: self }
+  end
+
+  def save_ride(ride_params)
+    ride = Ride.new(ride_params)
+    if vehicle_available?(ride)
+      if ride.save
+        { status: :created, ride: ride, invoice: ride.invoice }
+      else
+        { status: :unprocessable_entity, errors: ride.errors.full_messages }
+      end
+    else
+      { status: :unprocessable_entity, message: 'Selected vehicle is not available during this time' }
+    end
+  end
+
+
   private
 
   def end_time_must_be_greater_than_start_time
