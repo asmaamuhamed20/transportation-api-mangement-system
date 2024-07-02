@@ -10,27 +10,28 @@ class Api::V1::DriversController < ApplicationController
 
     # POST: /api/v1/drivers
     def create
-        @driver = Driver.new(driver_params)
-        if @driver.save
-            render_created(@driver)
+        result = Driver.create_driver(driver_params)
+        if result[:status] == :created
+          render_created(result[:driver])
         else
-          render_error(:unprocessable_entity, @driver.errors.full_messages)
+          render_error(:unprocessable_entity, result[:errors])
         end
     end
 
     # PUT: /api/v1/drivers/5
     def update
-        if @driver.update(driver_params)
-            render json: @driver, status: :ok
+        result = @driver.update_driver(driver_params)
+        if result[:status] == :ok
+          render json: result[:driver], status: :ok
         else
-            render_unprocessable_entity(@driver.errors.full_messages)
+          render_unprocessable_entity(result[:errors])
         end
     end
 
     # DELETE: /api/v1/drivers/5
     def destroy
-        @driver.destroy
-        head :no_content   
+        result = @driver.destroy_driver
+        head result[:status]
     end
 
     # GET: /api/v1/drivers/2/rides_for_driver    
