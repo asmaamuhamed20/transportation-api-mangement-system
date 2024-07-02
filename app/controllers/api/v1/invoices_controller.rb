@@ -3,7 +3,7 @@ class Api::V1::InvoicesController < ApplicationController
 
     # GET: /api/v1/invoices/list_all_invoices
     def list_all_invoices
-        render json: Invoice.all 
+        render_json_success(Invoice.all_invoices)
     end
 
     # GET: /api/v1/invoices/user_invoices_history/:user_id
