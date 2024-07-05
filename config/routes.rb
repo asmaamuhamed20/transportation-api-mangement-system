@@ -30,12 +30,6 @@ Rails.application.routes.draw do
         end
       end
 
-      # Devise Authentication
-      # devise_scope :user do
-      #   post "sign_up", to: "registrations#create"
-      #   post "sign_in", to: "sessions#create"
-      # end
-
       # Users
       resources :users, only: [:index, :update, :destroy] do
         collection do
