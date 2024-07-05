@@ -1,0 +1,561 @@
+openapi: 3.0.1
+info:
+  title: "Transportation API"
+  version: "v1"
+  description: "API documentation for the Transportation Project"
+
+components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - JWTAuth: []
+
+paths:
+  /api-docs:
+    get:
+      summary: "Swagger UI Endpoint"
+      tags:
+        - "Swagger"
+      responses:
+        '200':
+          description: "Swagger UI"
+
+  /sign_up:
+    post:
+      summary: "Register a new user"
+      tags:
+        - "Authentication"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  format: "email"
+                password:
+                  type: "string"
+                password_confirmation:
+                  type: "string"
+              required:
+                - email
+                - password
+                - password_confirmation
+      responses:
+        '201':
+          description: "User registered successfully"
+        '422':
+          description: "Validation errors"
+
+  /sign_in:
+    post:
+      summary: "Log in a user"
+      tags:
+        - "Authentication"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  format: "email"
+                password:
+                  type: "string"
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: "User logged in successfully"
+        '401':
+          description: "Unauthorized"
+
+  /api/v1/system_statistics/total_rides_count:
+    get:
+      summary: "Get total rides count"
+      security:
+        - JWTAuth: []
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/daily_rides_count:
+    get:
+      summary: "Get daily rides count"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/total_drivers_count:
+    get:
+      summary: "Get total drivers count"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/highest_rides_users:
+    get:
+      summary: "Get highest rides users"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/highest_rides_drivers:
+    get:
+      summary: "Get highest rides drivers"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/highest_rides_users_by_month/{month}/{year}:
+    get:
+      summary: "Get highest rides users by month"
+      tags:
+        - "System Statistics"
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/highest_rides_drivers_by_month/{month}/{year}:
+    get:
+      summary: "Get highest rides drivers by month"
+      tags:
+        - "System Statistics"
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/calculate_usage_percentage:
+    get:
+      summary: "Calculate usage percentage"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/system_statistics/rides_for_driver:
+    get:
+      summary: "Get rides for driver"
+      tags:
+        - "System Statistics"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/users:
+    get:
+      summary: "Retrieve users"
+      tags:
+        - "Users"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                    email:
+                      type: "string"
+
+    post:
+      summary: "Create a new user"
+      tags:
+        - "Users"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  format: "email"
+                password:
+                  type: "string"
+                password_confirmation:
+                  type: "string"
+              required:
+                - email
+                - password
+                - password_confirmation
+      responses:
+        '201':
+          description: "User created successfully"
+
+  /api/v1/users/me/rides:
+    get:
+      summary: "Get rides for current user"
+      tags:
+        - "Users"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/users/rides_for_date:
+    get:
+      summary: "Get rides for specific date"
+      tags:
+        - "Users"
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/drivers:
+    get:
+      summary: "Retrieve drivers"
+      tags:
+        - "Drivers"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                    name:
+                      type: "string"
+
+  /api/v1/drivers/{id}:
+    get:
+      summary: "Retrieve a specific driver"
+      tags:
+        - "Drivers"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/drivers:
+    post:
+      summary: "Create a new driver"
+      tags:
+        - "Drivers"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+              required:
+                - name
+      responses:
+        '200':
+          description: "Driver created successfully"
+
+  /api/v1/drivers/{id}:
+    put:
+      summary: "Update a driver"
+      tags:
+        - "Drivers"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+              required:
+                - name
+      responses:
+        '200':
+          description: "Driver updated successfully"
+
+  /api/v1/drivers/{id}/rides_for_driver:
+    get:
+      summary: "Get rides for a specific driver"
+      tags:
+        - "Drivers"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/driver_ride_ratings:
+    get:
+      summary: "Retrieve driver ride ratings"
+      tags:
+        - "Driver Ride Ratings"
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/driver_ride_ratings/{id}:
+    get:
+      summary: "Retrieve a specific driver ride rating"
+      tags:
+        - "Driver Ride Ratings"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/driver_ride_ratings/{id}/average_rating_for_driver:
+    get:
+      summary: "Get average rating for a specific driver"
+      tags:
+        - "Driver Ride Ratings"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/user_ratings:
+    post:
+      summary: "Create a user rating"
+      tags:
+        - "User Ratings"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                user_id:
+                  type: "integer"
+                rating:
+                  type: "integer"
+              required:
+                - user_id
+                - rating
+      responses:
+        '200':
+          description: "User rating created successfully"
+
+  /api/v1/user_ratings/{id}:
+    get:
+      summary: "Retrieve a specific user rating"
+      tags:
+        - "User Ratings"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+
+  /api/v1/vehicles:
+    get:
+      summary: "Retrieve vehicles"
+      tags:
+        - "Vehicles"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                    name:
+                      type: "string"
+                    make:
+                      type: "string"
+                    model:
+                      type: "string"
+                    year:
+                      type: "integer"
+
+    post:
+      summary: "Create a new vehicle"
+      tags:
+        - "Vehicles"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                make:
+                  type: "string"
+                model:
+                  type: "string"
+                year:
+                  type: "integer"
+              required:
+                - name
+                - make
+                - model
+                - year
+      responses:
+        '201':
+          description: "Vehicle created successfully"
+
+  /api/v1/vehicles/{id}:
+    get:
+      summary: "Retrieve a specific vehicle"
+      tags:
+        - "Vehicles"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                  name:
+                    type: "string"
+                  make:
+                    type: "string"
+                  model:
+                    type: "string"
+                  year:
+                    type: "integer"
+
+    put:
+      summary: "Update a vehicle"
+      tags:
+        - "Vehicles"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                make:
+                  type: "string"
+                model:
+                  type: "string"
+                year:
+                  type: "integer"
+              required:
+                - name
+                - make
+                - model
+                - year
+      responses:
+        '200':
+          description: "Vehicle updated successfully"
+
+    delete:
+      summary: "Delete a vehicle"
+      tags:
+        - "Vehicles"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: "Vehicle deleted successfully"

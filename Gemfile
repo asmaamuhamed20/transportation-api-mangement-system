@@ -18,6 +18,16 @@ gem 'geocoder', '~> 1.8', '>= 1.8.2'
 gem 'devise', '~> 4.9', '>= 4.9.2'
 gem 'cancancan'
 gem 'jwt'
+gem 'devise-jwt'
+gem 'rake', '~> 13.2.1'
+
+gem 'swagger-docs', '~> 0.2.9'
+gem 'rswag-api'
+gem 'rswag-ui'
+gem 'swagger-blocks'
+gem 'rswag', '~> 2.13'
+gem 'rswag-specs', '~> 2.13'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
@@ -44,6 +54,9 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem 'rspec-rails'
+  gem 'shoulda-matchers'
+  gem 'factory_bot_rails'
 end
 
 group :development do

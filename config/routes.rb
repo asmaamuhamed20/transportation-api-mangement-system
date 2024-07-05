@@ -1,5 +1,17 @@
 Rails.application.routes.draw do
-  devise_for :users
+  mount Rswag::Api::Engine => '/api-docs'
+  mount Rswag::Ui::Engine => '/api-docs'
+
+  devise_for :users, controllers: {
+    registrations: 'api/v1/registrations',
+    sessions: 'api/v1/sessions'
+  }
+  
+  # Devise Authentication
+  devise_scope :user do
+    post "sign_up", to: "api/v1/registrations#create"
+    post "sign_in", to: "api/v1/sessions#create"
+  end
   namespace :api do
     namespace :v1 do
       
@@ -19,10 +31,10 @@ Rails.application.routes.draw do
       end
 
       # Devise Authentication
-      devise_scope :user do
-        post "sign_up", to: "registrations#create"
-        post "sign_in", to: "sessions#create"
-      end
+      # devise_scope :user do
+      #   post "sign_up", to: "registrations#create"
+      #   post "sign_in", to: "sessions#create"
+      # end
 
       # Users
       resources :users, only: [:index, :update, :destroy] do

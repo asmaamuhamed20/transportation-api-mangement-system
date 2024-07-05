@@ -1,5 +1,6 @@
 class Api::V1::RegistrationsController < Devise::RegistrationsController
   before_action :ensure_params_exist, only: :create
+  respond_to :json
   
   # POST /api/v1/sign_up
   def create

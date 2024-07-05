@@ -1,6 +1,15 @@
 class Api::V1::UsersController < ApplicationController
   before_action :authorize_admin, only: [:destroy, :update]
 
+ 
+
+  # swagger_api :index do
+  #   summary 'Fetches all users'
+  #   param :query, :page, :integer, :optional, 'Page number'
+  #   param :query, :per_page, :integer, :optional, 'Number of items per page'
+  #   response :success, 'List of users fetched successfully'
+  #   response :unprocessable_entity, 'Invalid page or per_page parameter'
+  # end
   # GET: /api/v1/users
   def index
     render json: User.all, status: :ok
