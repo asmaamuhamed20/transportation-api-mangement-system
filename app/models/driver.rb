@@ -9,7 +9,7 @@ class Driver < ApplicationRecord
 
     validates :driver_name, presence: true
 
-    def create_driver(driver_params)
+    def self.create_driver(driver_params)
         driver = Driver.new(driver_params)
         if driver.save
           { status: :created, driver: driver }

@@ -11,6 +11,15 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  schemas:
+    Driver:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        name:
+          type: "string"
+
 security:
   - JWTAuth: []
 
@@ -180,9 +189,24 @@ paths:
       summary: "Get rides for driver"
       tags:
         - "System Statistics"
+      parameters:
+        - name: driver_id
+          in: query
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  driver_id:
+                    type: "integer"
+                  ride_count:
+                    type: "integer"
 
   /api/v1/users:
     get:
@@ -204,31 +228,6 @@ paths:
                     email:
                       type: "string"
 
-    post:
-      summary: "Create a new user"
-      tags:
-        - "Users"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: "object"
-              properties:
-                email:
-                  type: "string"
-                  format: "email"
-                password:
-                  type: "string"
-                password_confirmation:
-                  type: "string"
-              required:
-                - email
-                - password
-                - password_confirmation
-      responses:
-        '201':
-          description: "User created successfully"
 
   /api/v1/users/me/rides:
     get:
@@ -268,12 +267,33 @@ paths:
               schema:
                 type: "array"
                 items:
-                  type: "object"
-                  properties:
-                    id:
-                      type: "integer"
-                    name:
-                      type: "string"
+                  $ref: "#/components/schemas/Driver"
+
+    post:
+        summary: "Create a new driver"
+        tags:
+          - "Drivers"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  driver:
+                    type: "object"
+                    properties:
+                      driver_name:
+                        type: "string"
+                    required:
+                      - driver_name
+        responses:
+          '201':
+            description: "Driver created successfully"
+          '400':
+            description: "Invalid request"
+          '500':
+            description: "Server error"
 
   /api/v1/drivers/{id}:
     get:
@@ -281,7 +301,7 @@ paths:
       tags:
         - "Drivers"
       parameters:
-        - name: id
+        - driver_name: id
           in: path
           required: true
           schema:
@@ -289,34 +309,17 @@ paths:
       responses:
         '200':
           description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
 
-  /api/v1/drivers:
-    post:
-      summary: "Create a new driver"
-      tags:
-        - "Drivers"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: "object"
-              properties:
-                name:
-                  type: "string"
-              required:
-                - name
-      responses:
-        '200':
-          description: "Driver created successfully"
-
-  /api/v1/drivers/{id}:
     put:
       summary: "Update a driver"
       tags:
         - "Drivers"
       parameters:
-        - name: id
+        - driver_name: id
           in: path
           required: true
           schema:
@@ -328,10 +331,13 @@ paths:
             schema:
               type: "object"
               properties:
-                name:
-                  type: "string"
-              required:
-                - name
+                driver:
+                  type: "object"
+                  properties:
+                    diver_name:
+                      type: "string"
+                  required:
+                    - driver_name
       responses:
         '200':
           description: "Driver updated successfully"
@@ -342,7 +348,7 @@ paths:
       tags:
         - "Drivers"
       parameters:
-        - name: id
+        - driver_name: id
           in: path
           required: true
           schema:
@@ -445,16 +451,17 @@ paths:
                   properties:
                     id:
                       type: "integer"
-                    name:
-                      type: "string"
-                    make:
-                      type: "string"
                     model:
                       type: "string"
-                    year:
+                    registration_number:
+                      type: "string"
+                    driver_id:
                       type: "integer"
-
-    post:
+                    available_time:
+                      type: "string"
+                      format: "date-time"
+                      
+ post:
       summary: "Create a new vehicle"
       tags:
         - "Vehicles"
@@ -465,22 +472,30 @@ paths:
             schema:
               type: "object"
               properties:
-                name:
-                  type: "string"
-                make:
-                  type: "string"
-                model:
-                  type: "string"
-                year:
-                  type: "integer"
-              required:
-                - name
-                - make
-                - model
-                - year
+                vehicle:
+                  type: "object"
+                  properties:
+                    model:
+                      type: "string"
+                    registration_number:
+                      type: "string"
+                    driver_id:
+                      type: "integer"
+                    available_time:
+                      type: "string"
+                      format: "date-time"
+                  required:
+                    - model
+                    - registration_number
+                    - driver_id
+                    - available_time
       responses:
         '201':
           description: "Vehicle created successfully"
+        '400':
+          description: "Invalid request"
+        '500':
+          description: "Server error"
 
   /api/v1/vehicles/{id}:
     get:
@@ -503,14 +518,7 @@ paths:
                 properties:
                   id:
                     type: "integer"
-                  name:
-                    type: "string"
-                  make:
-                    type: "string"
-                  model:
-                    type: "string"
-                  year:
-                    type: "integer"
+
 
     put:
       summary: "Update a vehicle"

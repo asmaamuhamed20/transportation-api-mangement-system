@@ -69,4 +69,8 @@ class Api::V1::DriversController < ApplicationController
     def render_not_found(message)
         render json: { error: message }, status: :not_found
     end
+
+    def render_error(status, messages)
+        render json: { error: messages }, status: status
+    end
 end
