@@ -11,20 +11,24 @@ class Api::V1::VehiclesController < ApplicationController
     render_json_success(@vehicle)
   end
 
-  def new
-    @vehicle = Vehicle.new
-  end
-
   # POST: /api/v1/vehicles
   def create
-    @vehicle = Vehicle.create_vehicle(vehicle_params)
-    handle_vehicle_response(@vehicle)
+    result  = Vehicle.create_vehicle(vehicle_params)
+    if result[:valid?]
+      render_json_success(result[:vehicle], :created)
+    else
+      render_json_error(result[:errors].join(', '), :unprocessable_entity)
+    end
   end
 
   # PUT: /api/v1/vehicles/:vehicle_id
   def update
-    @vehicle.update_vehicle(vehicle_params)
-    handle_vehicle_response(@vehicle)
+    result =  @vehicle.update_vehicle(vehicle_params)
+    if result[:valid?]
+      render_json_success(result[:vehicle])
+    else
+      render_json_error(result[:errors].join(', '), :unprocessable_entity)
+    end
   end
 
   # DELETE: /api/v1/vehicles/:vehicle_id
@@ -46,14 +50,6 @@ class Api::V1::VehiclesController < ApplicationController
 
   def vehicle_params
     params.require(:vehicle).permit(:model, :registration_number, :driver_id, :available_time)
-  end
-
-  def handle_vehicle_response(vehicle)
-    if vehicle.valid?
-      render_json_success(vehicle)
-    else
-      render_json_error(vehicle.errors.full_messages.join(', '), :unprocessable_entity)
-    end
   end
 
   def render_json_success(data, status = :ok)
